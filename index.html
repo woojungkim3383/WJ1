@@ -629,57 +629,344 @@
               </div>
             </div>
 
-            <!-- Rule checklist -->
+            <!-- Rule checklist: 현장조사 위임 기본 조건 -->
             <div class="card card-pad">
               <div class="card-head">
-                <div><div class="card-eyebrow">기준 ① 기본 체크 사항</div><div class="card-title">조사필요 · 조사제외 판정 근거</div></div>
-                <span class="badge navy">14개 기준 자동 검증</span>
+                <div><div class="card-eyebrow">위임기준 1 / 5</div><div class="card-title">현장조사 위임 기본 조건</div></div>
+                <span class="badge navy">11개 세부기준 자동 검증</span>
               </div>
 
               <div class="rule-group">
-                <div class="rule-group-title">조사 필요 기준 <span class="rule-group-count">0 / 4 해당</span></div>
-                <button class="rule-row" data-detail="2년 이내 중증질환(암/뇌/심질환/질병사망건) 여부는 청구일(2026.06.28)과 계약일(2023.11.14)의 차이를 자동 계산해 판정합니다. 산출 결과 2년 7개월로 기준을 초과합니다.">
+                <div class="rule-group-title">① 조사 필요 유형 <span class="rule-group-count">0 / 4 해당</span></div>
+
+                <button class="rule-row">
                   <div class="rule-check na"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M6 12h12"/></svg></div>
                   <div class="rule-text">2년 이내 중증질환 청구건 (암/뇌/심질환/질병사망건)</div>
                   <span class="rule-tag na">미해당 · 2년 7개월 경과</span>
                   <span class="rule-chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M6 9l6 6 6-6"/></svg></span>
                 </button>
-                <div class="rule-detail"><div class="rule-detail-inner">AI 자동판정 로직: 청구일 – 계약일 자동 계산 → 730일 초과로 초년도 사고 기준 미적용</div></div>
+                <div class="rule-detail"><div class="rule-detail-inner">청구일(2026.06.28)과 계약일(2023.11.14)의 차이를 자동 계산한 결과 2년 7개월로 '2년 이내' 기준을 초과하여 미해당 처리되었습니다.</div></div>
 
-                <button class="rule-row" data-detail="가입 후 3개월 이내 사고, 추정손해액 1천만원 이상, 피보험자 65세 이상, 심평원 진료내역 징구거부 中 1개 이상 해당 시 트리거되나 모두 미해당합니다.">
+                <button class="rule-row">
                   <div class="rule-check na"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M6 12h12"/></svg></div>
-                  <div class="rule-text">초년도 사고 청구건 (가입 3개월 이내 · 손해액 1천만원 이상 · 65세 이상 · 심평원 징구거부 中 1개 이상)</div>
-                  <span class="rule-tag na">미해당</span>
+                  <div class="rule-text">2년 이내 만성질환 & 추정손해액 100만원 이상 (당뇨/고혈압/갑상선/간/만성신질환 등)</div>
+                  <span class="rule-tag na">미해당 · 대상 상병 아님</span>
                   <span class="rule-chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M6 9l6 6 6-6"/></svg></span>
                 </button>
-                <div class="rule-detail"><div class="rule-detail-inner">4개 하위조건 모두 미해당으로 자동 판정되었습니다.</div></div>
+                <div class="rule-detail"><div class="rule-detail-inner">청구 상병(C50 유방암)은 만성질환 목록(당뇨/고혈압/갑상선/간/만성신질환 등)에 해당하지 않아 자동 미해당 처리되었습니다.</div></div>
+
+                <button class="rule-row">
+                  <div class="rule-check na"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M6 12h12"/></svg></div>
+                  <div class="rule-text">2년 이내 근골격질환 & 입원청구 (척추체 및 관절 질환 · 승환 시 승환 전 계약 2년 내 무사고)</div>
+                  <span class="rule-tag na">미해당 · 대상 상병 아님</span>
+                  <span class="rule-chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M6 9l6 6 6-6"/></svg></span>
+                </button>
+                <div class="rule-detail"><div class="rule-detail-inner">청구 상병이 척추체·관절 질환에 해당하지 않고, 승환계약 이력도 없어 미해당 처리되었습니다.</div></div>
+
+                <button class="rule-row">
+                  <div class="rule-check na"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M6 12h12"/></svg></div>
+                  <div class="rule-text">초년도 사고 청구건 (① 가입 3개월 이내 사고 ② 추정손해액 1천만원 이상 ③ 피보험자 65세 이상 ④ 심평원 진료내역 징구거부 中 1개 이상)</div>
+                  <span class="rule-tag na">미해당 · 초년도 사고 아님</span>
+                  <span class="rule-chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M6 9l6 6 6-6"/></svg></span>
+                </button>
+                <div class="rule-detail"><div class="rule-detail-inner">4개 하위조건을 개별 대사한 결과 — ① 가입 3개월 이내 사고: 미해당(2년 7개월 경과) · ② 추정손해액 1천만원 이상: 해당(1,840만원) · ③ 피보험자 65세 이상: 미해당 · ④ 심평원 징구거부: 미해당. 손해액 조건만 부분 충족했으나 '초년도 사고' 자체가 성립하지 않아 그룹 전체는 미해당입니다.</div></div>
               </div>
 
               <div class="rule-group">
-                <div class="rule-group-title">조사 제외 기준 <span class="rule-group-count">1 / 10 해당</span></div>
-                <button class="rule-row" data-detail="ICIS상 실손 장기가입(5년, 타사포함) 확인되었고 가입 후 1년 이상 경과했으나, 고지의무 위반 의심이 확인되어 최종 제외 처리는 불가합니다.">
-                  <div class="rule-check pass"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6"><path d="M5 13l4 4L19 7"/></svg></div>
-                  <div class="rule-text">ICIS상 실손 장기가입(5년, 타사 포함) & 당사 고지항목 위반사항 無 & 가입 후 1년 이상 경과</div>
-                  <span class="rule-tag pass">부분 해당</span>
-                  <span class="rule-chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M6 9l6 6 6-6"/></svg></span>
-                </button>
-                <div class="rule-detail"><div class="rule-detail-inner">장기가입·경과기간 조건은 충족하나 고지항목 위반사항이 확인되어 조건 전체 충족에는 실패했습니다.</div></div>
+                <div class="rule-group-title">② 조사 제외 유형 <span class="rule-group-count">1 / 7 해당</span></div>
 
-                <button class="rule-row" data-detail="기준②(ICIS·스크래핑 대사) 결과 미고지 의심 항목이 확인되어 본 조사제외 기준은 적용할 수 없습니다.">
-                  <div class="rule-check fail"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6"><path d="M18 6L6 18M6 6l12 12"/></svg></div>
-                  <div class="rule-text">ICIS·스크래핑 확인 결과 고지의무 위반사항 無</div>
-                  <span class="rule-tag fail">위반 의심 확인 · 제외 불가</span>
-                  <span class="rule-chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M6 9l6 6 6-6"/></svg></span>
-                </button>
-                <div class="rule-detail"><div class="rule-detail-inner">아래 타임라인 및 대사 결과 표를 참고해 주세요.</div></div>
-
-                <button class="rule-row" data-detail="추정손해액 1,840만원으로 소액건 기준(통상 100만원 미만)을 크게 초과하여 본 조건은 적용되지 않습니다.">
+                <button class="rule-row">
                   <div class="rule-check na"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M6 12h12"/></svg></div>
-                  <div class="rule-text">소액건으로 ICIS·심평원 스크래핑 확인 결과 현장조사 필요성 낮은 경우</div>
-                  <span class="rule-tag na">추정손해액 1,840만원 · 소액 기준 초과</span>
+                  <div class="rule-text">승환계약의 경우, 승환 전 계약 2년 내 무사고</div>
+                  <span class="rule-tag na">해당없음 · 승환계약 아님</span>
                   <span class="rule-chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M6 9l6 6 6-6"/></svg></span>
                 </button>
-                <div class="rule-detail"><div class="rule-detail-inner">소액 기준 초과로 자동 제외되었습니다.</div></div>
+                <div class="rule-detail"><div class="rule-detail-inner">계약원장 조회 결과 부활·승환 이력이 없어 검토 대상이 아닙니다.</div></div>
+
+                <button class="rule-row">
+                  <div class="rule-check fail"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6"><path d="M18 6L6 18M6 6l12 12"/></svg></div>
+                  <div class="rule-text">고객 동의 하 5년 내 내원이력 확인(건보공단·심평원·국세청 자료징구) → 특이사항 없는 건</div>
+                  <span class="rule-tag fail">미해당 · 특이사항 확인됨</span>
+                  <span class="rule-chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M6 9l6 6 6-6"/></svg></span>
+                </button>
+                <div class="rule-detail"><div class="rule-detail-inner">5년 내 내원이력 조회 결과 조직검사 시행이력(2023.09.02)이 확인되어 '특이사항 없음' 요건을 충족하지 못했습니다.</div></div>
+
+                <button class="rule-row">
+                  <div class="rule-check pass"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6"><path d="M5 13l4 4L19 7"/></svg></div>
+                  <div class="rule-text">ICIS상 실손 장기가입(5년, 타사포함 · 상해만 가입 제외) & 당사 고지항목 위반사항 無 & 가입 후 1년 이상 경과 & 인과관계 상병 미발생 & 추정손해액 1천만원 미만</div>
+                  <span class="rule-tag pass">부분 해당 · 장기가입/경과기간만 충족</span>
+                  <span class="rule-chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M6 9l6 6 6-6"/></svg></span>
+                </button>
+                <div class="rule-detail"><div class="rule-detail-inner">장기가입 및 가입 후 1년 경과 조건은 충족하나, 고지항목 위반의심(미고지 조직검사 이력)과 추정손해액 1,840만원(1천만원 이상)으로 나머지 조건은 충족하지 못해 조사 제외가 불가합니다.</div></div>
+
+                <button class="rule-row">
+                  <div class="rule-check fail"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6"><path d="M18 6L6 18M6 6l12 12"/></svg></div>
+                  <div class="rule-text">ICIS상 실손 3년 이상 유지건(타사포함 · 상해만 가입 제외) & 당사 고지항목 위반사항 無 & 추정손해액 200만원 미만</div>
+                  <span class="rule-tag fail">미해당 · 손해액 기준 초과</span>
+                  <span class="rule-chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M6 9l6 6 6-6"/></svg></span>
+                </button>
+                <div class="rule-detail"><div class="rule-detail-inner">추정손해액 1,840만원으로 200만원 기준을 크게 초과하여 미해당 처리되었습니다.</div></div>
+
+                <button class="rule-row">
+                  <div class="rule-check na"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M6 12h12"/></svg></div>
+                  <div class="rule-text">ICIS상 특이사항 없고 추정손해액 100만원 미만건 (중증질환·만성질환·근골격질환 제외)</div>
+                  <span class="rule-tag na">해당없음 · 중증질환 및 손해액 기준 초과</span>
+                  <span class="rule-chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M6 9l6 6 6-6"/></svg></span>
+                </button>
+                <div class="rule-detail"><div class="rule-detail-inner">청구 상병이 중증질환(암)에 해당하며 추정손해액도 100만원을 초과해 대상에서 제외됩니다.</div></div>
+
+                <button class="rule-row">
+                  <div class="rule-check na"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M6 12h12"/></svg></div>
+                  <div class="rule-text">타질환이 병합되지 않은 단순 대상포진 근접사고건</div>
+                  <span class="rule-tag na">해당없음 · 대상 상병 아님</span>
+                  <span class="rule-chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M6 9l6 6 6-6"/></svg></span>
+                </button>
+                <div class="rule-detail"><div class="rule-detail-inner">청구 상병(유방암)이 대상포진과 무관하여 검토 대상이 아닙니다.</div></div>
+
+                <button class="rule-row">
+                  <div class="rule-check na"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M6 12h12"/></svg></div>
+                  <div class="rule-text">소액건으로 서면심사 과정에서 ICIS·심평원 스크래핑 확인 결과 현장조사 필요성이 낮은 경우</div>
+                  <span class="rule-tag na">미해당 · 추정손해액 1,840만원 · 소액 기준 초과</span>
+                  <span class="rule-chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M6 9l6 6 6-6"/></svg></span>
+                </button>
+                <div class="rule-detail"><div class="rule-detail-inner">추정손해액 1,840만원으로 소액건 기준(통상 100만원 미만)을 초과하여 미해당 처리되었습니다.</div></div>
+              </div>
+            </div>
+
+            <!-- Rule checklist: 암진단 책임개시일 검토 -->
+            <div class="card card-pad">
+              <div class="card-head">
+                <div><div class="card-eyebrow">위임기준 2 / 5</div><div class="card-title">암진단 책임개시일 검토</div></div>
+                <span class="badge navy">2개 세부기준 자동 검증</span>
+              </div>
+
+              <div class="rule-group">
+                <div class="rule-group-title">① 조사 필요 유형 <span class="rule-group-count">0 / 1 해당</span></div>
+                <button class="rule-row">
+                  <div class="rule-check na"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M6 12h12"/></svg></div>
+                  <div class="rule-text">가입 후 책임개시일 확인이 필요한 청구건 (가입 후 3개월 이내 청구 등)</div>
+                  <span class="rule-tag na">미해당 · 2년 7개월 경과</span>
+                  <span class="rule-chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M6 9l6 6 6-6"/></svg></span>
+                </button>
+                <div class="rule-detail"><div class="rule-detail-inner">청구일이 가입일로부터 2년 7개월 경과하여 책임개시일 인접 청구(가입 후 3개월 이내)에 해당하지 않습니다.</div></div>
+              </div>
+
+              <div class="rule-group">
+                <div class="rule-group-title">② 조사 제외 유형 <span class="rule-group-count">0 / 1 해당</span></div>
+                <button class="rule-row">
+                  <div class="rule-check fail"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6"><path d="M18 6L6 18M6 6l12 12"/></svg></div>
+                  <div class="rule-text">2년 경과 청구 & ICIS·스크래핑 및 제출서류상 책임개시일 내 치료·검진 이력 미확인건</div>
+                  <span class="rule-tag fail">미해당 · 치료이력 확인됨 · 제외 불가</span>
+                  <span class="rule-chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M6 9l6 6 6-6"/></svg></span>
+                </button>
+                <div class="rule-detail"><div class="rule-detail-inner">청구일 기준 2년 경과 요건은 충족하나, ICIS 대사 결과 가입 전 고지대상기간(3개월) 내 조직검사 시행이력(2023.09.02)이 확인되어 '치료·검진 이력 미확인' 요건을 충족하지 못해 제외가 불가합니다.</div></div>
+              </div>
+            </div>
+
+            <!-- Rule checklist: 부담보 관련 조건 -->
+            <div class="card card-pad">
+              <div class="card-head">
+                <div><div class="card-eyebrow">위임기준 3 / 5</div><div class="card-title">부담보 관련 조건</div></div>
+                <span class="badge navy">6개 세부기준 자동 검증</span>
+              </div>
+              <div class="approval-note" style="display:block; margin-bottom:16px;">계약원장 조회 결과 본 계약은 <b>부담보가 설정되어 있지 않습니다.</b> 아래 조건은 참고용으로 자동 표시됩니다.</div>
+
+              <div class="rule-group">
+                <div class="rule-group-title">① 조사 필요 유형 <span class="rule-group-count">0 / 2 해당</span></div>
+                <button class="rule-row">
+                  <div class="rule-check na"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M6 12h12"/></svg></div>
+                  <div class="rule-text">치료부위가 부담보 부위인지 여부가 불명확한 경우</div>
+                  <span class="rule-tag na">해당없음 · 부담보 미설정</span>
+                  <span class="rule-chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M6 9l6 6 6-6"/></svg></span>
+                </button>
+                <div class="rule-detail"><div class="rule-detail-inner">계약원장상 부담보 설정 이력이 없어 검토 대상이 아닙니다.</div></div>
+
+                <button class="rule-row">
+                  <div class="rule-check na"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M6 12h12"/></svg></div>
+                  <div class="rule-text">전기간 부담보 해제요건을 둘러싼 분쟁이 있는 경우</div>
+                  <span class="rule-tag na">해당없음 · 부담보 미설정</span>
+                  <span class="rule-chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M6 9l6 6 6-6"/></svg></span>
+                </button>
+                <div class="rule-detail"><div class="rule-detail-inner">부담보 자체가 설정되어 있지 않아 해제요건 분쟁도 발생할 수 없습니다.</div></div>
+              </div>
+
+              <div class="rule-group">
+                <div class="rule-group-title">② 조사 제외 유형 <span class="rule-group-count">0 / 4 해당</span></div>
+                <button class="rule-row">
+                  <div class="rule-check na"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M6 12h12"/></svg></div>
+                  <div class="rule-text">상해 청구건이거나 부담보 적용이 불가한 청구건 (비조사 대상)</div>
+                  <span class="rule-tag na">참고 · 질병청구건이나 부담보 미설정으로 무관</span>
+                  <span class="rule-chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M6 9l6 6 6-6"/></svg></span>
+                </button>
+                <div class="rule-detail"><div class="rule-detail-inner">상해 청구건은 아니나(질병 청구), 부담보 자체가 없어 부담보 관련 조사 필요성이 원천적으로 발생하지 않습니다.</div></div>
+
+                <button class="rule-row">
+                  <div class="rule-check na"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M6 12h12"/></svg></div>
+                  <div class="rule-text">유선상 치료부위가 부담보 부위로 확인되어 계약자가 부지급에 동의한 경우</div>
+                  <span class="rule-tag na">해당없음 · 부담보 미설정</span>
+                  <span class="rule-chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M6 9l6 6 6-6"/></svg></span>
+                </button>
+                <div class="rule-detail"><div class="rule-detail-inner">부담보가 없어 해당 절차 자체가 발생하지 않습니다.</div></div>
+
+                <button class="rule-row">
+                  <div class="rule-check na"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M6 12h12"/></svg></div>
+                  <div class="rule-text">최초 청약일부터 6년간 청구이력이 없는 경우 (부활 시 최초계약일 기준 · 승환 시 직전계약 기준, 전후조건 동일·공백기간 없어야 함)</div>
+                  <span class="rule-tag na">확인불가 · 최초 청구건</span>
+                  <span class="rule-chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M6 9l6 6 6-6"/></svg></span>
+                </button>
+                <div class="rule-detail"><div class="rule-detail-inner">이번 청구가 최초 청구건으로 조회되어 과거 청구이력 대비 조건이며, 부활·승환 이력도 없어 별도 판단이 불필요합니다.</div></div>
+
+                <button class="rule-row">
+                  <div class="rule-check fail"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6"><path d="M18 6L6 18M6 6l12 12"/></svg></div>
+                  <div class="rule-text">금번 청구 10만원 이하 & 누적 청구액 100만원 이하 (가입 후 5년 내 재진단·치료사실 無 및 환수 동의 녹취 등록 시 비조사 가능)</div>
+                  <span class="rule-tag fail">미해당 · 청구액 기준 초과</span>
+                  <span class="rule-chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M6 9l6 6 6-6"/></svg></span>
+                </button>
+                <div class="rule-detail"><div class="rule-detail-inner">금번 청구액이 1,840만원으로 기준(10만원 이하)을 크게 초과하여 미해당 처리되었습니다.</div></div>
+              </div>
+            </div>
+
+            <!-- Rule checklist: 스크래핑 관련 조건 -->
+            <div class="card card-pad">
+              <div class="card-head">
+                <div><div class="card-eyebrow">위임기준 4 / 5</div><div class="card-title">스크래핑 관련 조건</div></div>
+                <span class="badge navy">8개 세부기준 자동 검증</span>
+              </div>
+              <p style="font-size:12.5px; color:var(--slate); line-height:1.65; margin:0 0 16px;">서면심사를 원칙으로 하되, 서면심사가 불가하거나 추가 확인이 필요한 경우 현장심사를 진행합니다. 심평원 스크래핑 이력이 없으면 의뢰가 불가하며, 예외사항에 해당하는 경우에 한해 사유 선택 후 의뢰할 수 있습니다.</p>
+
+              <div class="rule-group">
+                <div class="rule-group-title">스크래핑 이력 체크 <span class="rule-group-count">1 / 1 해당</span></div>
+                <button class="rule-row">
+                  <div class="rule-check pass"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6"><path d="M5 13l4 4L19 7"/></svg></div>
+                  <div class="rule-text">공공마이데이터 발송이력 확인</div>
+                  <span class="rule-tag pass">해당 · 발송이력 확인 · 자동체크 완료</span>
+                  <span class="rule-chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M6 9l6 6 6-6"/></svg></span>
+                </button>
+                <div class="rule-detail"><div class="rule-detail-inner">공공마이데이터 발송이력이 확인되어 현장심사 의뢰 요건이 자동으로 충족되었습니다. 발송이력이 없는 경우에는 청구정보_위임의뢰_사고조사위임 화면에서 아래 예외사항을 필수로 체크해야 의뢰할 수 있습니다.</div></div>
+              </div>
+
+              <div class="rule-group">
+                <div class="rule-group-title">예외사항 (발송이력 없을 시 필수 체크 · 본 건은 참고용) <span class="rule-group-count">0 / 7 선택</span></div>
+
+                <button class="rule-row">
+                  <div class="rule-check na"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M6 12h12"/></svg></div>
+                  <div class="rule-text">심평원 스크래핑 동의 거부자 (안내 녹취 등재 필)</div>
+                  <span class="rule-tag na">선택안함 · 발송이력 확인으로 불필요</span>
+                  <span class="rule-chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M6 9l6 6 6-6"/></svg></span>
+                </button>
+                <div class="rule-detail"><div class="rule-detail-inner">계약자가 스크래핑 동의를 거부한 이력이 없어 해당하지 않습니다.</div></div>
+
+                <button class="rule-row">
+                  <div class="rule-check na"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M6 12h12"/></svg></div>
+                  <div class="rule-text">디지털 취약계층 (만 65세 이상, 장애인 등)</div>
+                  <span class="rule-tag na">선택안함 · 발송이력 확인으로 불필요</span>
+                  <span class="rule-chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M6 9l6 6 6-6"/></svg></span>
+                </button>
+                <div class="rule-detail"><div class="rule-detail-inner">피보험자가 디지털 취약계층 요건에 해당하지 않는 것으로 확인되었습니다.</div></div>
+
+                <button class="rule-row">
+                  <div class="rule-check na"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M6 12h12"/></svg></div>
+                  <div class="rule-text">조회일 기준 3개월 이내 진료기록 확인이 필요한 경우 (의료기관별 정보 제공 시점 차이로 통상 1~3개월 소요)</div>
+                  <span class="rule-tag na">선택안함 · 발송이력 확인으로 불필요</span>
+                  <span class="rule-chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M6 9l6 6 6-6"/></svg></span>
+                </button>
+                <div class="rule-detail"><div class="rule-detail-inner">이미 스크래핑 이력이 확보되어 해당하지 않습니다.</div></div>
+
+                <button class="rule-row">
+                  <div class="rule-check na"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M6 12h12"/></svg></div>
+                  <div class="rule-text">스크래핑 조회일 기준 직전 5년 이상 진료기록이 필요한 경우</div>
+                  <span class="rule-tag na">선택안함 · 발송이력 확인으로 불필요</span>
+                  <span class="rule-chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M6 9l6 6 6-6"/></svg></span>
+                </button>
+                <div class="rule-detail"><div class="rule-detail-inner">5년 이상 과거 진료기록 확인이 필요한 사안이 아닙니다.</div></div>
+
+                <button class="rule-row">
+                  <div class="rule-check na"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M6 12h12"/></svg></div>
+                  <div class="rule-text">민감상병 관련 진료기록 확인이 필요한 경우 (정신질환·성매개감염병·후천성면역결핍증·희귀질환·학대/낙태 관련)</div>
+                  <span class="rule-tag na">선택안함 · 발송이력 확인으로 불필요</span>
+                  <span class="rule-chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M6 9l6 6 6-6"/></svg></span>
+                </button>
+                <div class="rule-detail"><div class="rule-detail-inner">청구 상병(유방암)은 민감상병 목록에 해당하지 않습니다.</div></div>
+
+                <button class="rule-row">
+                  <div class="rule-check na"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M6 12h12"/></svg></div>
+                  <div class="rule-text">자동차보험·산재보험·건강검진 등 확인이 필요한 경우</div>
+                  <span class="rule-tag na">선택안함 · 발송이력 확인으로 불필요</span>
+                  <span class="rule-chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M6 9l6 6 6-6"/></svg></span>
+                </button>
+                <div class="rule-detail"><div class="rule-detail-inner">자보·산재·건강검진 관련 추가 확인 필요사항이 없습니다.</div></div>
+
+                <button class="rule-row">
+                  <div class="rule-check na"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M6 12h12"/></svg></div>
+                  <div class="rule-text">본인 명의 휴대폰이 없는 경우</div>
+                  <span class="rule-tag na">선택안함 · 발송이력 확인으로 불필요</span>
+                  <span class="rule-chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M6 9l6 6 6-6"/></svg></span>
+                </button>
+                <div class="rule-detail"><div class="rule-detail-inner">본인 명의 휴대폰 보유가 확인되어 해당하지 않습니다.</div></div>
+              </div>
+            </div>
+
+            <!-- Rule checklist: 특정 상품 관련 조건 -->
+            <div class="card card-pad">
+              <div class="card-head">
+                <div><div class="card-eyebrow">위임기준 5 / 5</div><div class="card-title">특정 상품 관련 조건 (311.5 새로고침 등)</div></div>
+                <span class="badge navy">6개 세부기준 자동 검증</span>
+              </div>
+              <div class="approval-note" style="display:block; margin-bottom:16px;">본 계약(무배당 건강파트너보험 2203)은 <b>311.5 새로고침 등 특정 상품군에 해당하지 않아</b> 아래 조건은 참고용으로만 표시됩니다.</div>
+
+              <div class="rule-group">
+                <div class="rule-group-title">① 조사 필요 유형 <span class="rule-group-count">1 / 5 해당</span></div>
+
+                <button class="rule-row">
+                  <div class="rule-check na"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M6 12h12"/></svg></div>
+                  <div class="rule-text">중대질환(암/뇌/심 진단코드) 청구건</div>
+                  <span class="rule-tag na">참고 · 상품 미해당 (상병은 암 해당)</span>
+                  <span class="rule-chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M6 9l6 6 6-6"/></svg></span>
+                </button>
+                <div class="rule-detail"><div class="rule-detail-inner">청구 상병은 암 진단코드(C50)에 해당하나, 본 계약은 대상 상품군이 아니어서 참고용으로만 표시됩니다.</div></div>
+
+                <button class="rule-row">
+                  <div class="rule-check na"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M6 12h12"/></svg></div>
+                  <div class="rule-text">가입 후 2년 이내 암·뇌·심 진단 및 수술 (전이암 진단비 납입면제 담보 포함)</div>
+                  <span class="rule-tag na">미해당 · 2년 7개월 경과 + 상품 미해당</span>
+                  <span class="rule-chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M6 9l6 6 6-6"/></svg></span>
+                </button>
+                <div class="rule-detail"><div class="rule-detail-inner">경과기간 초과 및 대상 상품 미해당으로 미해당 처리되었습니다.</div></div>
+
+                <button class="rule-row">
+                  <div class="rule-check na"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M6 12h12"/></svg></div>
+                  <div class="rule-text">가입 후 2년 이내 항암 담보 청구건 (항암방사선약물치료비·표적항암 등)</div>
+                  <span class="rule-tag na">미해당 · 2년 7개월 경과 + 상품 미해당</span>
+                  <span class="rule-chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M6 9l6 6 6-6"/></svg></span>
+                </button>
+                <div class="rule-detail"><div class="rule-detail-inner">항암 담보 청구 이력이 확인되지 않았으며, 경과기간도 초과했습니다.</div></div>
+
+                <button class="rule-row">
+                  <div class="rule-check na"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M6 12h12"/></svg></div>
+                  <div class="rule-text">가입 후 1년 이내 암·뇌·심 질병일당 청구건 (간병일당 포함, 추정손해액 100만원)</div>
+                  <span class="rule-tag na">미해당 · 1년 초과 + 상품 미해당</span>
+                  <span class="rule-chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M6 9l6 6 6-6"/></svg></span>
+                </button>
+                <div class="rule-detail"><div class="rule-detail-inner">가입 후 1년을 초과한 청구건으로 미해당 처리되었습니다.</div></div>
+
+                <button class="rule-row">
+                  <div class="rule-check fail"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6"><path d="M18 6L6 18M6 6l12 12"/></svg></div>
+                  <div class="rule-text">ICIS상 가입 전 1년 이내 치료이력이 확인되는 경우 (당/타사 실손 유지 중 1년 내 치료이력이 없더라도 조사 시행) — 반드시 과거력 확인</div>
+                  <span class="rule-tag fail">해당 · 가입 전 치료이력 확인됨</span>
+                  <span class="rule-chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M6 9l6 6 6-6"/></svg></span>
+                </button>
+                <div class="rule-detail"><div class="rule-detail-inner">ICIS 대사 결과 가입 전 1년 이내(고지대상기간 3개월 포함) 조직검사 시행이력(2023.09.02)이 확인되어 과거력 확인이 필요한 것으로 판정되었습니다. 해당 확인 결과는 기준② ICIS·스크래핑 대사 결과에 반영되어 있습니다.</div></div>
+              </div>
+
+              <div class="rule-group">
+                <div class="rule-group-title">② 검토 필요사항 <span class="rule-group-count">참고 1건</span></div>
+                <button class="rule-row">
+                  <div class="rule-check na"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M6 12h12"/></svg></div>
+                  <div class="rule-text">가입 전 3개월 이내 의무기록 확인 시 추가검사·재검사 필요소견 동반 여부 확인 (진단비는 최초 진단일, 항암담보는 최초 항암 시행일자 기준 검토 · 보험기간 중 진단확정 여부 및 항암 가입 전 90일 이내 치료개시 여부 확인)</div>
+                  <span class="rule-tag na">참고 · 상품 미해당</span>
+                  <span class="rule-chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M6 9l6 6 6-6"/></svg></span>
+                </button>
+                <div class="rule-detail"><div class="rule-detail-inner">본 계약은 대상 상품군이 아니므로 해당 검토 프로세스는 참고용으로만 안내됩니다.</div></div>
               </div>
             </div>
 

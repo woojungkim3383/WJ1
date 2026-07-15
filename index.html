@@ -1,0 +1,1769 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Co-pilot · 지급심사 케이스 — CL-2026-0417820</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,500;8..60,600;8..60,700&family=Inter:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --navy:#1E2761; --navy-dark:#141A47; --navy-mid:#2B3583;
+    --ice:#CADCFC; --ice-soft:#EEF3FC; --white:#FFFFFF; --bg:#F5F7FC;
+    --slate:#5A6478; --slate-soft:#8891A3; --text:#1B2233; --line:#E2E7F2;
+    --amber:#D98E2B; --amber-soft:#FBEEDA; --amber-line:#F0CE9B;
+    --red:#B5433C; --red-soft:#F8E7E5; --red-line:#E7B4AE;
+    --green:#2F8F5B; --green-soft:#E4F3EA; --green-line:#A9D8BE;
+    --font-display:'Source Serif 4', Georgia, serif;
+    --font-body:'Inter', -apple-system, sans-serif;
+    --font-mono:'IBM Plex Mono', 'Courier New', monospace;
+    --shadow-sm: 0 1px 2px rgba(20,26,71,0.06), 0 1px 1px rgba(20,26,71,0.04);
+    --shadow-md: 0 4px 14px rgba(20,26,71,0.08), 0 1px 3px rgba(20,26,71,0.05);
+    --shadow-lg: 0 20px 48px rgba(15,19,54,0.28);
+  }
+  *{ box-sizing:border-box; }
+  html,body{ margin:0; padding:0; }
+  body{ font-family:var(--font-body); background:var(--bg); color:var(--text); -webkit-font-smoothing:antialiased; font-size:14px; line-height:1.5; }
+  ::selection{ background:var(--ice); }
+  a{ color:inherit; }
+  button{ font-family:inherit; cursor:pointer; }
+  :focus-visible{ outline:2px solid var(--navy-mid); outline-offset:2px; border-radius:4px; }
+  ul{ margin:0; padding:0; list-style:none; }
+  @media (prefers-reduced-motion: reduce){ *{ animation-duration:0.001ms !important; transition-duration:0.001ms !important; } }
+
+  .app{ display:grid; grid-template-columns: 72px 1fr; min-height:100vh; }
+
+  /* ---- Rail ---- */
+  .rail{ background:var(--navy-dark); display:flex; flex-direction:column; align-items:center; padding:20px 0; gap:28px; }
+  .rail-logo{ width:36px; height:36px; border-radius:10px; background:linear-gradient(155deg, var(--navy-mid), var(--navy)); display:flex; align-items:center; justify-content:center; color:var(--ice); font-family:var(--font-display); font-weight:700; font-size:15px; box-shadow: var(--shadow-sm); }
+  .rail-nav{ display:flex; flex-direction:column; gap:6px; margin-top:8px; align-items:center; }
+  .rail-item{ width:44px; height:44px; border-radius:11px; display:flex; align-items:center; justify-content:center; color:#8892C4; background:transparent; border:none; transition:background .15s ease, color .15s ease; position:relative; }
+  .rail-item svg{ width:20px; height:20px; pointer-events:none; }
+  .rail-item:hover{ background:#1F2760; color:var(--ice); }
+  .rail-item.active{ background:var(--navy-mid); color:#fff; }
+  .rail-item.active::before{ content:""; position:absolute; left:-14px; top:50%; transform:translateY(-50%); width:4px; height:20px; border-radius:0 3px 3px 0; background:var(--amber); }
+  .rail-tip{ position:absolute; left:56px; top:50%; transform:translateY(-50%); background:var(--navy-dark); color:#fff; font-size:11px; font-weight:600; padding:6px 10px; border-radius:7px; white-space:nowrap; opacity:0; pointer-events:none; transition:opacity .12s ease; box-shadow:var(--shadow-md); }
+  .rail-item:hover .rail-tip{ opacity:1; }
+  .rail-spacer{ flex:1; }
+  .rail-avatar{ width:36px; height:36px; border-radius:50%; background:var(--ice); color:var(--navy); display:flex; align-items:center; justify-content:center; font-weight:700; font-size:12.5px; border:2px solid #313B84; }
+
+  .main{ display:flex; flex-direction:column; min-width:0; }
+
+  /* ---- Top bar ---- */
+  .topbar{ height:56px; background:var(--white); border-bottom:1px solid var(--line); display:flex; align-items:center; padding:0 28px; gap:14px; position:sticky; top:0; z-index:30; }
+  .crumbs{ font-size:12.5px; color:var(--slate); display:flex; align-items:center; gap:6px; white-space:nowrap; }
+  .crumbs b{ color:var(--text); font-weight:600; }
+  .crumbs .sep{ color:#C3C9DA; }
+  .crumbs button{ background:none; border:none; color:var(--slate); font-size:12.5px; padding:0; font-family:inherit; }
+  .crumbs button:hover{ color:var(--navy); text-decoration:underline; }
+  .topbar-spacer{ flex:1; }
+  .search-wrap{ position:relative; }
+  .topbar-search{ display:flex; align-items:center; gap:8px; background:var(--bg); border:1px solid var(--line); border-radius:8px; padding:7px 12px; width:280px; color:var(--slate-soft); font-size:12.5px; }
+  .topbar-search input{ border:none; background:transparent; outline:none; font-size:12.5px; color:var(--text); width:100%; font-family:inherit; }
+  .topbar-search input::placeholder{ color:var(--slate-soft); }
+  .topbar-search svg{ width:14px; height:14px; flex-shrink:0; }
+  .dropdown-panel{ position:absolute; top:calc(100% + 8px); right:0; width:300px; background:var(--white); border:1px solid var(--line); border-radius:12px; box-shadow:var(--shadow-lg); padding:8px; z-index:40; opacity:0; transform:translateY(-6px); pointer-events:none; transition:opacity .14s ease, transform .14s ease; }
+  .dropdown-panel.left{ left:0; right:auto; }
+  .dropdown-panel.open{ opacity:1; transform:translateY(0); pointer-events:auto; }
+  .dd-title{ font-size:10.5px; font-weight:700; text-transform:uppercase; letter-spacing:.05em; color:var(--slate-soft); padding:8px 10px 4px; }
+  .dd-item{ display:flex; align-items:flex-start; gap:10px; padding:9px 10px; border-radius:8px; }
+  .dd-item:hover{ background:var(--bg); }
+  .dd-item svg{ width:15px; height:15px; color:var(--navy); flex-shrink:0; margin-top:1px; }
+  .dd-item-body{ font-size:12px; color:var(--text); line-height:1.4; }
+  .dd-item-time{ font-size:10.5px; color:var(--slate-soft); font-family:var(--font-mono); margin-top:2px; }
+  .dd-empty{ padding:14px 10px; font-size:12px; color:var(--slate-soft); text-align:center; }
+
+  .icon-btn{ width:34px; height:34px; border-radius:8px; border:1px solid var(--line); background:var(--white); display:flex; align-items:center; justify-content:center; color:var(--slate); position:relative; flex-shrink:0; }
+  .icon-btn svg{ width:16px; height:16px; pointer-events:none; }
+  .icon-btn:hover{ background:var(--ice-soft); color:var(--navy); }
+  .icon-btn .dot{ position:absolute; top:6px; right:6px; width:7px; height:7px; border-radius:50%; background:var(--red); border:1.5px solid #fff; }
+
+  /* ---- View switching ---- */
+  .view-panel{ display:none; }
+  .view-panel.active{ display:block; }
+
+  /* ---- Case header ---- */
+  .case-header{ background:var(--white); border-bottom:1px solid var(--line); padding:22px 28px 0 28px; }
+  .case-title-row{ display:flex; align-items:flex-start; justify-content:space-between; gap:24px; flex-wrap:wrap; }
+  .case-id{ font-family:var(--font-mono); font-size:11.5px; color:var(--slate-soft); letter-spacing:.02em; margin-bottom:6px; display:flex; align-items:center; gap:10px; }
+  .case-title{ font-family:var(--font-display); font-size:24px; font-weight:600; color:var(--text); display:flex; align-items:center; gap:12px; flex-wrap:wrap; }
+  .badge{ display:inline-flex; align-items:center; gap:5px; padding:4px 10px; border-radius:20px; font-size:11.5px; font-weight:700; letter-spacing:.01em; white-space:nowrap; transition:background .15s ease, color .15s ease, border-color .15s ease; }
+  .badge-dot{ width:6px; height:6px; border-radius:50%; }
+  .badge.red{ background:var(--red-soft); color:var(--red); border:1px solid var(--red-line); }
+  .badge.red .badge-dot{ background:var(--red); }
+  .badge.green{ background:var(--green-soft); color:var(--green); border:1px solid var(--green-line); }
+  .badge.green .badge-dot{ background:var(--green); }
+  .badge.amber{ background:var(--amber-soft); color:var(--amber); border:1px solid var(--amber-line); }
+  .badge.amber .badge-dot{ background:var(--amber); }
+  .badge.navy{ background:var(--ice-soft); color:var(--navy); border:1px solid var(--ice); }
+  .reset-link{ font-size:11px; color:var(--slate-soft); background:none; border:none; text-decoration:underline; font-family:inherit; }
+  .reset-link:hover{ color:var(--navy); }
+
+  .case-meta{ display:flex; gap:32px; margin-top:14px; flex-wrap:wrap; }
+  .meta-item{ display:flex; flex-direction:column; gap:2px; }
+  .meta-label{ font-size:10.5px; color:var(--slate-soft); text-transform:uppercase; letter-spacing:.06em; font-weight:600; }
+  .meta-value{ font-size:13px; color:var(--text); font-weight:600; }
+  .meta-value.mono{ font-family:var(--font-mono); font-weight:500; }
+
+  /* ---- Stepper ---- */
+  .stepper{ display:flex; align-items:center; margin-top:20px; }
+  .step{ display:flex; align-items:center; gap:9px; padding:10px 16px 10px 4px; position:relative; background:none; border:none; border-radius:8px; }
+  .step:hover:not(.locked){ background:var(--bg); }
+  .step.locked{ cursor:not-allowed; }
+  .step-num{ width:24px; height:24px; border-radius:50%; flex-shrink:0; display:flex; align-items:center; justify-content:center; font-size:11px; font-weight:700; background:var(--ice-soft); color:var(--slate-soft); transition:background .15s ease, color .15s ease; }
+  .step.done .step-num{ background:var(--green); color:#fff; }
+  .step.active .step-num{ background:var(--amber); color:#fff; }
+  .step-label{ font-size:12px; color:var(--slate-soft); font-weight:600; }
+  .step.done .step-label{ color:var(--slate); }
+  .step.active .step-label{ color:var(--navy); }
+  .step-line{ width:34px; height:1.5px; background:var(--line); }
+  .step-line.done{ background:var(--green-line); }
+
+  /* ---- Content grid ---- */
+  .content{ display:grid; grid-template-columns: 1fr 336px; gap:20px; padding:22px 28px 48px 28px; align-items:start; }
+  .col-main{ display:flex; flex-direction:column; gap:18px; min-width:0; }
+  .col-side{ display:flex; flex-direction:column; gap:16px; }
+  .step-panel{ display:none; flex-direction:column; gap:18px; }
+  .step-panel.active{ display:flex; }
+
+  .card{ background:var(--white); border:1px solid var(--line); border-radius:14px; box-shadow:var(--shadow-sm); }
+  .card-pad{ padding:20px 22px; }
+  .card-head{ display:flex; align-items:center; justify-content:space-between; margin-bottom:14px; gap:10px; }
+  .card-eyebrow{ font-size:10.5px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; color:var(--slate-soft); }
+  .card-title{ font-family:var(--font-display); font-size:17px; font-weight:600; color:var(--text); margin-top:2px; }
+
+  /* ---- Locked panel ---- */
+  .locked-card{ background:var(--white); border:1px dashed var(--line); border-radius:14px; padding:48px 30px; text-align:center; color:var(--slate-soft); }
+  .locked-icon{ width:44px; height:44px; border-radius:12px; background:var(--ice-soft); color:var(--navy); display:flex; align-items:center; justify-content:center; margin:0 auto 14px; }
+  .locked-icon svg{ width:22px; height:22px; }
+  .locked-title{ font-family:var(--font-display); font-size:16px; color:var(--text); font-weight:600; margin-bottom:6px; }
+  .locked-body{ font-size:12.5px; max-width:38ch; margin:0 auto; line-height:1.6; }
+
+  /* ---- AI Verdict Card ---- */
+  .verdict-card{ background:var(--red-soft); border:1px solid var(--red-line); border-radius:14px; padding:22px 24px; transition:background .2s ease, border-color .2s ease; }
+  .verdict-card.is-green{ background:var(--green-soft); border-color:var(--green-line); }
+  .verdict-card.is-amber{ background:var(--amber-soft); border-color:var(--amber-line); }
+  .verdict-top{ display:flex; align-items:flex-start; justify-content:space-between; gap:16px; flex-wrap:wrap; }
+  .verdict-flag{ display:flex; align-items:center; gap:10px; }
+  .verdict-icon{ width:38px; height:38px; border-radius:10px; background:var(--red); display:flex; align-items:center; justify-content:center; flex-shrink:0; box-shadow:0 4px 10px rgba(181,67,60,.28); transition:background .2s ease; }
+  .verdict-card.is-green .verdict-icon{ background:var(--green); box-shadow:0 4px 10px rgba(47,143,91,.28); }
+  .verdict-card.is-amber .verdict-icon{ background:var(--amber); box-shadow:0 4px 10px rgba(217,142,43,.28); }
+  .verdict-icon svg{ width:20px; height:20px; color:#fff; }
+  .verdict-heading{ font-family:var(--font-display); font-size:20px; font-weight:700; color:#7A2E29; }
+  .verdict-card.is-green .verdict-heading{ color:#215E3D; }
+  .verdict-card.is-amber .verdict-heading{ color:#8A5A16; }
+  .verdict-sub{ font-size:12.5px; color:#9A4038; margin-top:2px; }
+  .verdict-card.is-green .verdict-sub{ color:#3D7D5B; }
+  .verdict-card.is-amber .verdict-sub{ color:#A3771F; }
+  .verdict-conf{ display:flex; flex-direction:column; align-items:flex-end; gap:2px; }
+  .verdict-conf-label{ font-size:10px; color:#9A4038; text-transform:uppercase; letter-spacing:.06em; font-weight:700; }
+  .verdict-conf-value{ font-family:var(--font-mono); font-size:13px; color:#7A2E29; font-weight:600; }
+  .verdict-body{ margin-top:16px; font-size:13.5px; color:#5F2B26; line-height:1.65; max-width:66ch; }
+  .verdict-body b{ color:#7A2E29; }
+  .verdict-evidence{ display:flex; gap:10px; margin-top:16px; flex-wrap:wrap; }
+  .evidence-chip{ display:flex; align-items:center; gap:7px; background:#fff; border:1px solid var(--red-line); border-radius:9px; padding:8px 12px; font-size:12px; color:#7A2E26; font-weight:600; }
+  .evidence-chip svg{ width:13px; height:13px; color:var(--red); flex-shrink:0; pointer-events:none; }
+  .evidence-chip:hover{ box-shadow:var(--shadow-sm); }
+
+  /* ---- Checklist ---- */
+  .rule-group{ margin-bottom:4px; }
+  .rule-group + .rule-group{ margin-top:16px; padding-top:16px; border-top:1px solid var(--line); }
+  .rule-group-title{ display:flex; align-items:center; gap:8px; font-size:12.5px; font-weight:700; color:var(--slate); margin-bottom:10px; }
+  .rule-group-count{ font-family:var(--font-mono); font-size:10.5px; background:var(--ice-soft); color:var(--navy); padding:2px 7px; border-radius:20px; font-weight:600; }
+  .rule-row{ display:grid; grid-template-columns: 22px 1fr auto 16px; align-items:flex-start; gap:12px; padding:9px 6px; border-radius:8px; background:none; border:none; width:100%; text-align:left; }
+  .rule-row:hover{ background:var(--bg); }
+  .rule-check{ width:20px; height:20px; border-radius:6px; margin-top:1px; display:flex; align-items:center; justify-content:center; flex-shrink:0; pointer-events:none; }
+  .rule-check.na{ background:var(--ice-soft); color:var(--slate-soft); }
+  .rule-check.pass{ background:var(--green-soft); color:var(--green); }
+  .rule-check.fail{ background:var(--red-soft); color:var(--red); }
+  .rule-check svg{ width:12px; height:12px; }
+  .rule-text{ font-size:12.5px; color:var(--text); line-height:1.5; pointer-events:none; }
+  .rule-tag{ font-size:10.5px; font-weight:700; padding:3px 8px; border-radius:6px; white-space:nowrap; pointer-events:none; }
+  .rule-tag.na{ background:var(--bg); color:var(--slate-soft); }
+  .rule-tag.pass{ background:var(--green-soft); color:var(--green); }
+  .rule-tag.fail{ background:var(--red-soft); color:var(--red); }
+  .rule-chevron{ color:var(--slate-soft); transition:transform .15s ease; pointer-events:none; }
+  .rule-chevron svg{ width:14px; height:14px; }
+  .rule-row.open .rule-chevron{ transform:rotate(180deg); }
+  .rule-detail{ grid-column:2 / 4; max-height:0; overflow:hidden; transition:max-height .18s ease; font-size:11.5px; color:var(--slate); line-height:1.6; background:var(--bg); border-radius:8px; }
+  .rule-detail-inner{ padding:0 12px; }
+  .rule-row.open + .rule-detail{ max-height:120px; }
+  .rule-row.open + .rule-detail .rule-detail-inner{ padding:10px 12px; }
+
+  /* ---- Timeline ---- */
+  .timeline-wrap{ padding-top:6px; }
+  .timeline-legend{ display:flex; gap:18px; margin-bottom:22px; flex-wrap:wrap; }
+  .legend-item{ display:flex; align-items:center; gap:7px; font-size:11.5px; color:var(--slate); }
+  .legend-dot{ width:9px; height:9px; border-radius:50%; flex-shrink:0; }
+  .legend-swatch{ width:14px; height:9px; border-radius:2px; flex-shrink:0; }
+  .timeline{ position:relative; height:96px; margin:20px 6px 34px 6px; }
+  .timeline-axis{ position:absolute; left:0; right:0; top:48px; height:2px; background:var(--line); }
+  .timeline-window{ position:absolute; top:38px; height:22px; border-radius:6px; background:var(--amber-soft); border:1px solid var(--amber-line); }
+  .timeline-window-label{ position:absolute; top:-19px; left:50%; transform:translateX(-50%); font-size:10px; font-weight:700; color:var(--amber); white-space:nowrap; }
+  .tl-point{ position:absolute; top:48px; transform:translate(-50%,-50%); text-align:center; width:1px; cursor:pointer; }
+  .tl-dot{ width:12px; height:12px; border-radius:50%; background:var(--navy); border:2px solid #fff; box-shadow:0 0 0 2px var(--navy); margin:0 auto; }
+  .tl-point.warn .tl-dot{ background:var(--red); box-shadow:0 0 0 2px var(--red); width:14px; height:14px; }
+  .tl-date{ position:absolute; top:20px; left:50%; transform:translateX(-50%); font-family:var(--font-mono); font-size:10px; color:var(--slate); white-space:nowrap; }
+  .tl-label{ position:absolute; top:66px; left:50%; transform:translateX(-50%); font-size:11px; font-weight:600; color:var(--text); white-space:nowrap; text-align:center; }
+  .tl-point.warn .tl-label{ color:var(--red); font-weight:700; }
+
+  /* ---- Evidence table ---- */
+  .ev-table{ width:100%; border-collapse:collapse; font-size:12.5px; }
+  .ev-table th{ text-align:left; font-size:10.5px; text-transform:uppercase; letter-spacing:.05em; color:var(--slate-soft); font-weight:700; padding:0 10px 9px 10px; border-bottom:1px solid var(--line); }
+  .ev-table td{ padding:11px 10px; border-bottom:1px solid var(--line); vertical-align:top; color:var(--text); }
+  .ev-table tr:last-child td{ border-bottom:none; }
+  .ev-table tbody tr{ cursor:pointer; }
+  .ev-table tbody tr:hover td{ background:var(--bg); }
+  .ev-table td.mono{ font-family:var(--font-mono); font-size:11.5px; color:var(--slate); }
+  .ev-table tr.flagged td{ background:var(--red-soft); }
+  .ev-table tr.flagged:hover td{ background:#f3d9d6; }
+  .mini-tag{ font-size:10px; font-weight:700; padding:3px 7px; border-radius:5px; }
+  .mini-tag.red{ background:#fff; color:var(--red); border:1px solid var(--red-line); }
+  .mini-tag.gray{ background:var(--bg); color:var(--slate-soft); }
+
+  /* ---- Side cards ---- */
+  .side-list{ display:flex; flex-direction:column; gap:0; }
+  .side-row{ display:flex; align-items:center; justify-content:space-between; padding:9px 0; border-bottom:1px dashed var(--line); }
+  .side-row:last-child{ border-bottom:none; padding-bottom:0; }
+  .side-label{ font-size:12px; color:var(--slate); }
+  .side-value{ font-size:12.5px; font-weight:600; color:var(--text); text-align:right; }
+
+  .doc-row{ display:flex; align-items:center; gap:10px; padding:8px 0; border-radius:8px; cursor:pointer; }
+  .doc-row:hover{ background:var(--bg); margin:0 -8px; padding:8px; }
+  .doc-icon{ width:28px; height:28px; border-radius:7px; display:flex; align-items:center; justify-content:center; flex-shrink:0; pointer-events:none; }
+  .doc-icon.ok{ background:var(--green-soft); color:var(--green); }
+  .doc-icon svg{ width:14px; height:14px; }
+  .doc-name{ font-size:12.5px; font-weight:600; color:var(--text); flex:1; pointer-events:none; }
+  .doc-status{ font-size:10.5px; font-weight:700; color:var(--green); pointer-events:none; }
+
+  /* ---- Action card ---- */
+  .action-card{ background:var(--navy); border-radius:14px; padding:20px 22px; color:#fff; }
+  .action-card .card-eyebrow{ color:#95A0DE; }
+  .action-card .card-title{ color:#fff; font-size:16px; }
+  .action-note{ font-size:12px; color:#B7BFE8; margin-top:8px; line-height:1.55; }
+  .action-btns{ display:flex; flex-direction:column; gap:8px; margin-top:16px; }
+  .btn{ border:none; border-radius:9px; padding:11px 14px; font-size:12.5px; font-weight:700; display:flex; align-items:center; justify-content:center; gap:8px; font-family:var(--font-body); transition:transform .1s ease, opacity .15s ease, background .15s ease; }
+  .btn:active{ transform:scale(.98); }
+  .btn svg{ width:14px; height:14px; pointer-events:none; }
+  .btn-primary{ background:var(--amber); color:#3A2606; }
+  .btn-primary:hover{ opacity:.92; }
+  .btn-outline{ background:transparent; color:#fff; border:1px solid #3B458C; }
+  .btn-outline:hover{ background:#232C6E; }
+  .btn-ghost{ background:transparent; color:#B7BFE8; }
+  .btn-ghost:hover{ color:#fff; }
+  .btn-solid-navy{ background:var(--navy); color:#fff; }
+  .btn-solid-navy:hover{ background:var(--navy-mid); }
+  .btn-line{ background:#fff; color:var(--navy); border:1px solid var(--line); }
+  .btn-line:hover{ background:var(--ice-soft); }
+  .btn:disabled{ opacity:.45; cursor:not-allowed; }
+  .btn-full{ width:100%; }
+
+  textarea.note-input, select.note-input{ width:100%; margin-top:14px; background:#1B245C; border:1px solid #333D85; border-radius:9px; padding:10px 12px; color:#fff; font-family:var(--font-body); font-size:12px; resize:none; }
+  textarea.note-input{ height:64px; }
+  textarea.note-input::placeholder{ color:#7580BC; }
+
+  .status-note{ background:rgba(255,255,255,.06); border:1px solid #333D85; border-radius:10px; padding:12px 14px; margin-top:14px; font-size:12px; color:#DCE2F7; line-height:1.6; }
+  .status-note b{ color:#fff; }
+
+  /* ---- Activity log ---- */
+  .log-item{ display:flex; gap:10px; padding:9px 0; }
+  .log-item:not(:last-child){ border-bottom:1px dashed var(--line); }
+  .log-dot{ width:7px; height:7px; border-radius:50%; background:var(--ice); margin-top:5px; flex-shrink:0; }
+  .log-dot.red{ background:var(--red); }
+  .log-dot.green{ background:var(--green); }
+  .log-dot.amber{ background:var(--amber); }
+  .log-body{ font-size:11.5px; color:var(--text); line-height:1.5; }
+  .log-time{ font-size:10.5px; color:var(--slate-soft); font-family:var(--font-mono); margin-top:1px; }
+
+  /* ---- Queue view ---- */
+  .queue-wrap{ padding:26px 28px 48px; }
+  .queue-head{ display:flex; align-items:flex-end; justify-content:space-between; margin-bottom:18px; flex-wrap:wrap; gap:14px; }
+  .queue-title{ font-family:var(--font-display); font-size:24px; font-weight:600; }
+  .queue-sub{ font-size:12.5px; color:var(--slate); margin-top:4px; }
+  .queue-filters{ display:flex; gap:8px; }
+  .chip-filter{ font-size:11.5px; font-weight:600; padding:7px 13px; border-radius:20px; border:1px solid var(--line); background:#fff; color:var(--slate); }
+  .chip-filter.active{ background:var(--navy); color:#fff; border-color:var(--navy); }
+  .queue-table{ width:100%; border-collapse:collapse; background:#fff; border:1px solid var(--line); border-radius:14px; overflow:hidden; box-shadow:var(--shadow-sm); }
+  .queue-table th{ text-align:left; font-size:10.5px; text-transform:uppercase; letter-spacing:.05em; color:var(--slate-soft); font-weight:700; padding:12px 16px; background:var(--bg); border-bottom:1px solid var(--line); }
+  .queue-table td{ padding:14px 16px; border-bottom:1px solid var(--line); font-size:12.5px; vertical-align:middle; }
+  .queue-table tr:last-child td{ border-bottom:none; }
+  .queue-row{ cursor:pointer; }
+  .queue-row:hover td{ background:var(--ice-soft); }
+  .queue-row.current td{ background:#FDF6EC; }
+  .q-name{ font-weight:700; color:var(--text); }
+  .q-id{ font-family:var(--font-mono); font-size:11px; color:var(--slate-soft); }
+
+  /* ---- Placeholder view ---- */
+  .placeholder-wrap{ display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:120px 28px; }
+  .placeholder-icon{ width:64px; height:64px; border-radius:16px; background:var(--ice-soft); color:var(--navy); display:flex; align-items:center; justify-content:center; margin-bottom:18px; }
+  .placeholder-icon svg{ width:30px; height:30px; }
+  .placeholder-title{ font-family:var(--font-display); font-size:22px; font-weight:600; margin-bottom:8px; }
+  .placeholder-body{ font-size:13px; color:var(--slate); max-width:40ch; line-height:1.6; margin-bottom:20px; }
+
+  /* ---- Modal ---- */
+  .modal-overlay{ position:fixed; inset:0; background:rgba(15,19,54,.5); display:flex; align-items:center; justify-content:center; z-index:100; opacity:0; pointer-events:none; transition:opacity .16s ease; padding:20px; }
+  .modal-overlay.open{ opacity:1; pointer-events:auto; }
+  .modal{ background:#fff; border-radius:16px; width:460px; max-width:100%; max-height:86vh; overflow-y:auto; box-shadow:var(--shadow-lg); transform:translateY(10px) scale(.98); transition:transform .16s ease; }
+  .modal-overlay.open .modal{ transform:translateY(0) scale(1); }
+  .modal-head{ display:flex; align-items:flex-start; justify-content:space-between; gap:12px; padding:22px 22px 0; }
+  .modal-icon{ width:36px; height:36px; border-radius:10px; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+  .modal-icon svg{ width:18px; height:18px; color:#fff; }
+  .modal-icon.amber{ background:var(--amber); }
+  .modal-icon.red{ background:var(--red); }
+  .modal-icon.green{ background:var(--green); }
+  .modal-icon.navy{ background:var(--navy); }
+  .modal-close{ width:28px; height:28px; border-radius:8px; border:none; background:var(--bg); color:var(--slate); display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+  .modal-close svg{ width:14px; height:14px; }
+  .modal-close:hover{ background:var(--line); }
+  .modal-title{ font-family:var(--font-display); font-size:18px; font-weight:600; margin-top:12px; padding:0 22px; }
+  .modal-body{ padding:10px 22px 4px; font-size:13px; color:var(--slate); line-height:1.65; }
+  .modal-body b{ color:var(--text); }
+  .modal-summary{ background:var(--bg); border-radius:10px; padding:12px 14px; margin-top:6px; font-size:12px; }
+  .modal-summary .row{ display:flex; justify-content:space-between; padding:4px 0; }
+  .modal-summary .row span:first-child{ color:var(--slate-soft); }
+  .modal-summary .row span:last-child{ font-weight:600; color:var(--text); }
+  .modal-field{ margin-top:14px; }
+  .modal-field label{ font-size:11.5px; font-weight:700; color:var(--text); display:block; margin-bottom:6px; }
+  .modal-field textarea, .modal-field select{ width:100%; border:1px solid var(--line); border-radius:9px; padding:10px 12px; font-family:inherit; font-size:12.5px; color:var(--text); resize:none; background:#fff; }
+  .modal-field textarea{ height:70px; }
+  .modal-field .hint{ font-size:11px; color:var(--slate-soft); margin-top:5px; }
+  .modal-foot{ display:flex; gap:10px; padding:20px 22px 22px; }
+  .modal-foot .btn{ flex:1; }
+  .modal-doc-preview{ background:var(--bg); border:1px dashed var(--line); border-radius:12px; height:200px; display:flex; flex-direction:column; align-items:center; justify-content:center; color:var(--slate-soft); margin-top:10px; gap:8px; }
+  .modal-doc-preview svg{ width:32px; height:32px; }
+  .checklist-mini{ display:flex; flex-direction:column; gap:2px; margin-top:6px; }
+  .checklist-mini-row{ display:flex; align-items:center; gap:10px; padding:8px 4px; border-radius:8px; cursor:pointer; }
+  .checklist-mini-row:hover{ background:var(--bg); }
+  .cb{ width:18px; height:18px; border-radius:5px; border:1.5px solid var(--line); flex-shrink:0; display:flex; align-items:center; justify-content:center; }
+  .cb.checked{ background:var(--green); border-color:var(--green); color:#fff; }
+  .cb svg{ width:11px; height:11px; }
+  .checklist-mini-text{ font-size:12px; color:var(--text); flex:1; }
+  .progress-track{ height:6px; border-radius:4px; background:var(--line); overflow:hidden; margin-top:10px; }
+  .progress-fill{ height:100%; background:var(--green); border-radius:4px; transition:width .2s ease; width:0%; }
+
+  /* ---- Stage tracker (STEP 5) ---- */
+  .stage-tracker{ margin:2px 4px 22px; }
+  .stage-track-line{ position:relative; height:3px; background:var(--line); border-radius:2px; margin:0 44px; }
+  .stage-track-fill{ position:absolute; left:0; top:0; height:100%; background:var(--green); border-radius:2px; transition:width .3s ease; width:6%; }
+  .stage-pts{ display:flex; justify-content:space-between; margin-top:-11px; }
+  .stage-pt{ display:flex; flex-direction:column; align-items:center; gap:6px; width:110px; text-align:center; }
+  .stage-dot{ width:22px; height:22px; border-radius:50%; background:#fff; border:2.5px solid var(--line); display:flex; align-items:center; justify-content:center; font-size:10.5px; font-weight:700; color:var(--slate-soft); transition:background .15s ease, border-color .15s ease, box-shadow .15s ease; }
+  .stage-pt.done .stage-dot{ background:var(--green); border-color:var(--green); color:#fff; }
+  .stage-pt.active .stage-dot{ background:var(--amber); border-color:var(--amber); color:#fff; box-shadow:0 0 0 4px var(--amber-soft); }
+  .stage-label{ font-size:11px; font-weight:700; color:var(--slate-soft); margin-top:2px; }
+  .stage-pt.done .stage-label, .stage-pt.active .stage-label{ color:var(--text); }
+  .stage-date{ font-size:10px; font-family:var(--font-mono); color:var(--slate-soft); }
+
+  /* ---- Result visual (STEP 6) ---- */
+  .result-visual{ display:flex; align-items:center; gap:14px; padding:16px 18px; border-radius:12px; background:var(--green-soft); border:1px solid var(--green-line); margin-bottom:16px; transition:background .15s ease, border-color .15s ease; }
+  .result-visual.is-red{ background:var(--red-soft); border-color:var(--red-line); }
+  .result-visual-icon{ width:38px; height:38px; border-radius:10px; background:var(--green); display:flex; align-items:center; justify-content:center; flex-shrink:0; color:#fff; transition:background .15s ease; }
+  .result-visual.is-red .result-visual-icon{ background:var(--red); }
+  .result-visual-icon svg{ width:20px; height:20px; }
+  .result-visual-title{ font-family:var(--font-display); font-size:15.5px; font-weight:700; color:#215E3D; }
+  .result-visual.is-red .result-visual-title{ color:#7A2E29; }
+  .result-visual-sub{ font-size:12px; color:#3D7D5B; margin-top:3px; line-height:1.5; }
+  .result-visual.is-red .result-visual-sub{ color:#9A4038; }
+
+  .violation-toggle{ display:flex; align-items:center; gap:10px; padding:12px 14px; border:1px solid var(--line); border-radius:10px; cursor:pointer; font-size:12.5px; font-weight:600; color:var(--text); margin-bottom:14px; background:#fff; }
+  .violation-toggle:hover{ background:var(--bg); }
+  .violation-toggle .cb{ width:19px; height:19px; }
+  .violation-toggle.checked{ border-color:var(--red-line); background:var(--red-soft); }
+  .violation-toggle-sub{ font-size:11px; color:var(--slate-soft); font-weight:500; margin-top:2px; }
+  .approval-note{ font-size:11.5px; color:var(--slate); background:var(--bg); border:1px dashed var(--line); border-radius:9px; padding:10px 12px; margin-top:12px; line-height:1.55; }
+  .approval-note b{ color:var(--red); }
+
+  /* ---- Approval dashboard (STEP 7) ---- */
+  .stat-grid{ display:grid; grid-template-columns:repeat(4,1fr); gap:12px; }
+  .stat-tile{ background:var(--bg); border:1px solid var(--line); border-radius:12px; padding:14px 16px; }
+  .stat-tile-label{ font-size:10.5px; color:var(--slate-soft); font-weight:700; text-transform:uppercase; letter-spacing:.05em; }
+  .stat-tile-value{ font-family:var(--font-display); font-size:20px; font-weight:700; color:var(--text); margin-top:6px; }
+  .stat-tile-value.green{ color:var(--green); }
+  .stat-tile-value.red{ color:var(--red); }
+  .stat-tile-sub{ font-size:11px; color:var(--slate-soft); margin-top:2px; }
+
+  .hbar-row{ display:grid; grid-template-columns:118px 1fr 44px; align-items:center; gap:10px; padding:7px 0; }
+  .hbar-name{ font-size:11.5px; color:var(--slate); font-weight:600; }
+  .hbar-track{ height:9px; border-radius:5px; background:var(--bg); overflow:hidden; }
+  .hbar-fill{ height:100%; border-radius:5px; background:var(--navy-mid); }
+  .hbar-val{ font-family:var(--font-mono); font-size:11px; color:var(--slate); text-align:right; }
+
+  .appr-timeline .log-item{ padding:11px 0; }
+
+  .approval-final{ display:flex; align-items:center; justify-content:space-between; gap:16px; background:var(--navy); border-radius:12px; padding:16px 18px; margin-top:18px; flex-wrap:wrap; }
+  .approval-final-text b{ display:block; font-family:var(--font-display); font-size:15px; margin-bottom:3px; color:#fff; font-weight:700; }
+  .approval-final-text span{ font-size:11.5px; color:#B7BFE8; }
+
+  /* ---- Toasts ---- */
+  .toast-stack{ position:fixed; bottom:22px; right:22px; display:flex; flex-direction:column; gap:10px; z-index:200; align-items:flex-end; }
+  .toast{ background:var(--navy-dark); color:#fff; padding:13px 16px; border-radius:11px; font-size:12.5px; display:flex; align-items:center; gap:10px; box-shadow:var(--shadow-lg); max-width:320px; opacity:0; transform:translateX(14px); transition:opacity .18s ease, transform .18s ease; }
+  .toast.show{ opacity:1; transform:translateX(0); }
+  .toast svg{ width:16px; height:16px; flex-shrink:0; }
+  .toast.success svg{ color:#63D39B; }
+  .toast.info svg{ color:#8FB1F5; }
+  .toast.warn svg{ color:var(--amber); }
+
+  @media (max-width: 1180px){ .content{ grid-template-columns: 1fr; } .col-side{ order:-1; } }
+  @media (max-width: 720px){ .app{ grid-template-columns: 1fr; } .rail{ display:none; } .case-meta{ gap:18px; } .topbar-search{ display:none; } }
+</style>
+</head>
+<body>
+
+<div class="app">
+
+  <!-- ============ RAIL ============ -->
+  <nav class="rail" aria-label="주 메뉴">
+    <div class="rail-logo">AI</div>
+    <div class="rail-nav">
+      <button class="rail-item" data-view="dashboard" aria-label="대시보드"><span class="rail-tip">대시보드</span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></svg>
+      </button>
+      <button class="rail-item" data-view="queue" aria-label="배당 큐"><span class="rail-tip">배당 큐</span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 6h16M4 12h16M4 18h10"/></svg>
+      </button>
+      <button class="rail-item active" data-view="case" aria-label="심사 케이스"><span class="rail-tip">심사 케이스</span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 3h6l1 3H8l1-3z"/><rect x="5" y="6" width="14" height="15" rx="2"/><path d="M9 12h6M9 16h4"/></svg>
+      </button>
+      <button class="rail-item" data-view="field" aria-label="현장심사 관리"><span class="rail-tip">현장심사 관리</span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+      </button>
+      <button class="rail-item" data-view="stats" aria-label="통계"><span class="rail-tip">통계</span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 20V10M12 20V4M20 20v-7"/></svg>
+      </button>
+    </div>
+    <div class="rail-spacer"></div>
+    <button class="rail-item" data-view="settings" aria-label="설정"><span class="rail-tip">설정</span>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 00.34 1.87l.06.06a2 2 0 11-2.83 2.83l-.06-.06a1.7 1.7 0 00-1.87-.34 1.7 1.7 0 00-1.04 1.56V21a2 2 0 01-4 0v-.09A1.7 1.7 0 008.96 19a1.7 1.7 0 00-1.87.34l-.06.06a2 2 0 11-2.83-2.83l.06-.06A1.7 1.7 0 004.6 15a1.7 1.7 0 00-1.56-1.04H3a2 2 0 010-4h.09A1.7 1.7 0 004.6 9a1.7 1.7 0 00-.34-1.87l-.06-.06a2 2 0 112.83-2.83l.06.06A1.7 1.7 0 008 4.6a1.7 1.7 0 001.04-1.56V3a2 2 0 014 0v.09A1.7 1.7 0 0015 4.6a1.7 1.7 0 001.87-.34l.06-.06a2 2 0 112.83 2.83l-.06.06A1.7 1.7 0 0019.4 9a1.7 1.7 0 001.56 1.04H21a2 2 0 010 4h-.09a1.7 1.7 0 00-1.56 1z"/></svg>
+    </button>
+    <div class="rail-avatar">이경</div>
+  </nav>
+
+  <!-- ============ MAIN ============ -->
+  <div class="main">
+
+    <!-- Top bar -->
+    <header class="topbar">
+      <div class="crumbs" id="crumbs">
+        <button data-view="queue">배당 큐</button><span class="sep">/</span><span>지급심사</span><span class="sep">/</span><b>CL-2026-0417820</b>
+      </div>
+      <div class="topbar-spacer"></div>
+
+      <div class="search-wrap">
+        <div class="topbar-search">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+          <input id="search-input" type="text" placeholder="청구번호, 계약자명 검색" autocomplete="off">
+        </div>
+        <div class="dropdown-panel left" id="search-dropdown">
+          <div class="dd-title">최근 조회 케이스</div>
+          <div class="dd-item" data-search-pick="CL-2026-0417820">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 3h6l1 3H8l1-3z"/><rect x="5" y="6" width="14" height="15" rx="2"/></svg>
+            <div class="dd-item-body">김도윤 님 · CL-2026-0417820<div class="dd-item-time">유방암(C50) · 조사필요</div></div>
+          </div>
+          <div class="dd-item" data-search-pick="CL-2026-0417512">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 3h6l1 3H8l1-3z"/><rect x="5" y="6" width="14" height="15" rx="2"/></svg>
+            <div class="dd-item-body">박서연 님 · CL-2026-0417512<div class="dd-item-time">뇌경색(I63) · 심사중</div></div>
+          </div>
+          <div class="dd-item" data-search-pick="CL-2026-0416980">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 3h6l1 3H8l1-3z"/><rect x="5" y="6" width="14" height="15" rx="2"/></svg>
+            <div class="dd-item-body">최민준 님 · CL-2026-0416980<div class="dd-item-time">척추질환(M48) · 지급완료</div></div>
+          </div>
+        </div>
+      </div>
+
+      <div style="position:relative;">
+        <button class="icon-btn" id="bell-btn" aria-label="알림"><span class="dot"></span>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M18 8a6 6 0 10-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 01-3.4 0"/></svg>
+        </button>
+        <div class="dropdown-panel" id="bell-dropdown">
+          <div class="dd-title">알림</div>
+          <div class="dd-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/></svg>
+            <div class="dd-item-body">CL-2026-0417820 · 고지의무 위반 의심 플래그 생성<div class="dd-item-time">14:22</div></div>
+          </div>
+          <div class="dd-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>
+            <div class="dd-item-body">CL-2026-0416712 · 해지통지 기한 2일 남음<div class="dd-item-time">09:40</div></div>
+          </div>
+          <div class="dd-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 13l4 4L19 7"/></svg>
+            <div class="dd-item-body">CL-2026-0416980 · 제출서류 3종 확인 완료<div class="dd-item-time">08:55</div></div>
+          </div>
+        </div>
+      </div>
+
+      <button class="icon-btn" id="print-btn" aria-label="인쇄">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 9V3h12v6M6 18H4a1 1 0 01-1-1v-6a1 1 0 011-1h16a1 1 0 011 1v6a1 1 0 01-1 1h-2M6 14h12v7H6z"/></svg>
+      </button>
+      <button class="icon-btn" id="share-btn" aria-label="공유">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 10.5l6.8-3.7M8.6 13.5l6.8 3.7"/></svg>
+      </button>
+    </header>
+
+    <!-- ============ VIEW: CASE ============ -->
+    <div class="view-panel active" id="view-case">
+
+      <section class="case-header">
+        <div class="case-title-row">
+          <div>
+            <div class="case-id">CL-2026-0417820 &nbsp;·&nbsp; 무배당 건강파트너보험(2203) &nbsp;<button class="reset-link" id="reset-demo">데모 초기화</button></div>
+            <div class="case-title">
+              김도윤 님 청구건
+              <span class="badge red" id="top-badge"><span class="badge-dot"></span>조사필요 · 고지의무 위반 의심</span>
+              <span class="badge navy">청구상병 · 유방암(C50)</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="case-meta">
+          <div class="meta-item"><span class="meta-label">배당일</span><span class="meta-value mono">2026.07.02</span></div>
+          <div class="meta-item"><span class="meta-label">가입일</span><span class="meta-value mono">2023.11.14</span></div>
+          <div class="meta-item"><span class="meta-label">청구일</span><span class="meta-value mono">2026.06.28</span></div>
+          <div class="meta-item"><span class="meta-label">경과기간</span><span class="meta-value">2년 7개월</span></div>
+          <div class="meta-item"><span class="meta-label">추정 지급액</span><span class="meta-value mono">18,400,000원</span></div>
+          <div class="meta-item"><span class="meta-label">담당 심사역</span><span class="meta-value">이경 심사역</span></div>
+        </div>
+
+        <div class="stepper" id="stepper">
+          <button class="step done" data-step="2"><div class="step-num">✓</div><div class="step-label">계약확인</div></button>
+          <div class="step-line done"></div>
+          <button class="step done" data-step="3"><div class="step-num">✓</div><div class="step-label">서류확인</div></button>
+          <div class="step-line done"></div>
+          <button class="step active" data-step="4"><div class="step-num">4</div><div class="step-label">사고조사 판단</div></button>
+          <div class="step-line" id="line-45"></div>
+          <button class="step locked" data-step="5"><div class="step-num">5</div><div class="step-label">조사 진행관리</div></button>
+          <div class="step-line" id="line-56"></div>
+          <button class="step locked" data-step="6"><div class="step-num">6</div><div class="step-label">심사결과</div></button>
+          <div class="step-line" id="line-67"></div>
+          <button class="step locked" data-step="7"><div class="step-num">7</div><div class="step-label">지급결재</div></button>
+        </div>
+      </section>
+
+      <div class="content">
+
+        <!-- ===== MAIN COLUMN ===== -->
+        <div class="col-main">
+
+          <!-- ---- STEP 2 PANEL ---- -->
+          <div class="step-panel" id="panel-2">
+            <div class="card card-pad">
+              <div class="card-head">
+                <div><div class="card-eyebrow">STEP 2</div><div class="card-title">계약 정상여부 확인</div></div>
+                <span class="badge green"><span class="badge-dot"></span>이상없음</span>
+              </div>
+              <p style="font-size:12.5px; color:var(--slate); line-height:1.65; margin:0 0 16px;">계약원장을 자동 조회하여 계약 유지상태, 부활·승환 이력, 부담보 설정 여부를 확인했습니다. 이상징후가 발견되지 않아 STEP 3로 자동 진행되었습니다.</p>
+              <div class="side-list">
+                <div class="side-row"><span class="side-label">계약 상태</span><span class="side-value">정상 유지</span></div>
+                <div class="side-row"><span class="side-label">부활 계약 여부</span><span class="side-value">해당 없음</span></div>
+                <div class="side-row"><span class="side-label">승환 계약 여부</span><span class="side-value">해당 없음</span></div>
+                <div class="side-row"><span class="side-label">특약·부담보 설정</span><span class="side-value">설정 없음</span></div>
+                <div class="side-row"><span class="side-label">계약원장 조회 시각</span><span class="side-value mono" style="font-family:var(--font-mono); font-weight:500;">2026.07.02 09:01</span></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ---- STEP 3 PANEL ---- -->
+          <div class="step-panel" id="panel-3">
+            <div class="card card-pad">
+              <div class="card-head">
+                <div><div class="card-eyebrow">STEP 3</div><div class="card-title">청구서류 확인 및 누락 서류 확인</div></div>
+                <span class="badge green"><span class="badge-dot"></span>3/3 제출</span>
+              </div>
+              <p style="font-size:12.5px; color:var(--slate); line-height:1.65; margin:0 0 6px;">외부 OCR·서류분류 모델의 판독 결과값을 연동받아 필수서류 3종의 제출 여부를 확인했습니다. 문서를 클릭하면 판독 요약을 볼 수 있습니다.</p>
+              <div>
+                <div class="doc-row" data-doc="진단서">
+                  <div class="doc-icon ok"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M5 13l4 4L19 7"/></svg></div>
+                  <span class="doc-name">진단서</span><span class="doc-status">제출완료</span>
+                </div>
+                <div class="doc-row" data-doc="조직검사결과지">
+                  <div class="doc-icon ok"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M5 13l4 4L19 7"/></svg></div>
+                  <span class="doc-name">조직검사결과지</span><span class="doc-status">제출완료</span>
+                </div>
+                <div class="doc-row" data-doc="수술기록지">
+                  <div class="doc-icon ok"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M5 13l4 4L19 7"/></svg></div>
+                  <span class="doc-name">수술기록지</span><span class="doc-status">제출완료</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ---- STEP 4 PANEL ---- -->
+          <div class="step-panel active" id="panel-4">
+
+            <div class="verdict-card" id="verdict-card">
+              <div class="verdict-top">
+                <div class="verdict-flag">
+                  <div class="verdict-icon" id="verdict-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><path d="M12 9v4M12 17h.01"/></svg>
+                  </div>
+                  <div>
+                    <div class="verdict-heading" id="verdict-heading">AI 판정 · 조사 필요</div>
+                    <div class="verdict-sub" id="verdict-sub">기준 ② ICIS · 스크래핑 알릴의무사항 대사 결과</div>
+                  </div>
+                </div>
+                <div class="verdict-conf">
+                  <span class="verdict-conf-label">근거 매칭</span>
+                  <span class="verdict-conf-value">3건 자동 확인</span>
+                </div>
+              </div>
+
+              <p class="verdict-body" id="verdict-body">
+                ICIS 조회 결과, 청구 상병(유방암)과 관련된 <b>조직검사 시행이력(2023.09.02, 서울행복외과)</b>이 확인되었습니다.
+                해당 치료일은 청약서 알릴의무사항의 고지대상 기간(<b>가입 전 3개월 이내</b>) 안에 위치하나, 청약서상에는
+                관련 항목이 <b>미고지</b> 상태로 확인되어 고지의무 위반 의심 사유로 자동 플래그되었습니다.
+                기본 체크(①) 기준으로는 경과기간 2년 초과로 조사제외 대상이었으나, 본 대사 결과에 따라 조사필요로 전환됩니다.
+              </p>
+
+              <div class="verdict-evidence" id="verdict-evidence">
+                <button class="evidence-chip" data-evidence="code">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M8 10h8M8 14h5"/></svg>
+                  상병코드 대사 · C50 일치
+                </button>
+                <button class="evidence-chip" data-evidence="period">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>
+                  고지대상기간 內 치료이력
+                </button>
+                <button class="evidence-chip" data-evidence="missing">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h5l2-8 4 16 2-8h5"/></svg>
+                  청약서 알릴의무 미기재
+                </button>
+              </div>
+            </div>
+
+            <!-- Rule checklist -->
+            <div class="card card-pad">
+              <div class="card-head">
+                <div><div class="card-eyebrow">기준 ① 기본 체크 사항</div><div class="card-title">조사필요 · 조사제외 판정 근거</div></div>
+                <span class="badge navy">14개 기준 자동 검증</span>
+              </div>
+
+              <div class="rule-group">
+                <div class="rule-group-title">조사 필요 기준 <span class="rule-group-count">0 / 4 해당</span></div>
+                <button class="rule-row" data-detail="2년 이내 중증질환(암/뇌/심질환/질병사망건) 여부는 청구일(2026.06.28)과 계약일(2023.11.14)의 차이를 자동 계산해 판정합니다. 산출 결과 2년 7개월로 기준을 초과합니다.">
+                  <div class="rule-check na"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M6 12h12"/></svg></div>
+                  <div class="rule-text">2년 이내 중증질환 청구건 (암/뇌/심질환/질병사망건)</div>
+                  <span class="rule-tag na">미해당 · 2년 7개월 경과</span>
+                  <span class="rule-chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M6 9l6 6 6-6"/></svg></span>
+                </button>
+                <div class="rule-detail"><div class="rule-detail-inner">AI 자동판정 로직: 청구일 – 계약일 자동 계산 → 730일 초과로 초년도 사고 기준 미적용</div></div>
+
+                <button class="rule-row" data-detail="가입 후 3개월 이내 사고, 추정손해액 1천만원 이상, 피보험자 65세 이상, 심평원 진료내역 징구거부 中 1개 이상 해당 시 트리거되나 모두 미해당합니다.">
+                  <div class="rule-check na"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M6 12h12"/></svg></div>
+                  <div class="rule-text">초년도 사고 청구건 (가입 3개월 이내 · 손해액 1천만원 이상 · 65세 이상 · 심평원 징구거부 中 1개 이상)</div>
+                  <span class="rule-tag na">미해당</span>
+                  <span class="rule-chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M6 9l6 6 6-6"/></svg></span>
+                </button>
+                <div class="rule-detail"><div class="rule-detail-inner">4개 하위조건 모두 미해당으로 자동 판정되었습니다.</div></div>
+              </div>
+
+              <div class="rule-group">
+                <div class="rule-group-title">조사 제외 기준 <span class="rule-group-count">1 / 10 해당</span></div>
+                <button class="rule-row" data-detail="ICIS상 실손 장기가입(5년, 타사포함) 확인되었고 가입 후 1년 이상 경과했으나, 고지의무 위반 의심이 확인되어 최종 제외 처리는 불가합니다.">
+                  <div class="rule-check pass"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6"><path d="M5 13l4 4L19 7"/></svg></div>
+                  <div class="rule-text">ICIS상 실손 장기가입(5년, 타사 포함) & 당사 고지항목 위반사항 無 & 가입 후 1년 이상 경과</div>
+                  <span class="rule-tag pass">부분 해당</span>
+                  <span class="rule-chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M6 9l6 6 6-6"/></svg></span>
+                </button>
+                <div class="rule-detail"><div class="rule-detail-inner">장기가입·경과기간 조건은 충족하나 고지항목 위반사항이 확인되어 조건 전체 충족에는 실패했습니다.</div></div>
+
+                <button class="rule-row" data-detail="기준②(ICIS·스크래핑 대사) 결과 미고지 의심 항목이 확인되어 본 조사제외 기준은 적용할 수 없습니다.">
+                  <div class="rule-check fail"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6"><path d="M18 6L6 18M6 6l12 12"/></svg></div>
+                  <div class="rule-text">ICIS·스크래핑 확인 결과 고지의무 위반사항 無</div>
+                  <span class="rule-tag fail">위반 의심 확인 · 제외 불가</span>
+                  <span class="rule-chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M6 9l6 6 6-6"/></svg></span>
+                </button>
+                <div class="rule-detail"><div class="rule-detail-inner">아래 타임라인 및 대사 결과 표를 참고해 주세요.</div></div>
+
+                <button class="rule-row" data-detail="추정손해액 1,840만원으로 소액건 기준(통상 100만원 미만)을 크게 초과하여 본 조건은 적용되지 않습니다.">
+                  <div class="rule-check na"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M6 12h12"/></svg></div>
+                  <div class="rule-text">소액건으로 ICIS·심평원 스크래핑 확인 결과 현장조사 필요성 낮은 경우</div>
+                  <span class="rule-tag na">추정손해액 1,840만원 · 소액 기준 초과</span>
+                  <span class="rule-chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M6 9l6 6 6-6"/></svg></span>
+                </button>
+                <div class="rule-detail"><div class="rule-detail-inner">소액 기준 초과로 자동 제외되었습니다.</div></div>
+              </div>
+            </div>
+
+            <!-- Timeline -->
+            <div class="card card-pad">
+              <div class="card-head">
+                <div><div class="card-eyebrow">기준 ② ICIS · 스크래핑 기반 판단</div><div class="card-title">고지의무 위반 판단 타임라인</div></div>
+              </div>
+
+              <div class="timeline-wrap">
+                <div class="timeline-legend">
+                  <span class="legend-item"><span class="legend-swatch" style="background:var(--amber-soft); border:1px solid var(--amber-line);"></span>고지대상 기간 (가입 전 3개월)</span>
+                  <span class="legend-item"><span class="legend-dot" style="background:var(--navy);"></span>계약 시점</span>
+                  <span class="legend-item"><span class="legend-dot" style="background:var(--red);"></span>미고지 치료이력</span>
+                </div>
+
+                <div class="timeline">
+                  <div class="timeline-axis"></div>
+                  <div class="timeline-window" style="left:8%; width:32%;"><span class="timeline-window-label">고지대상 기간</span></div>
+
+                  <div class="tl-point" style="left:8%;" data-evidence="period">
+                    <div class="tl-dot"></div><div class="tl-date">2023.06.02</div><div class="tl-label">고지대상 기간 시작</div>
+                  </div>
+                  <div class="tl-point warn" style="left:29%;" data-evidence="code">
+                    <div class="tl-dot"></div><div class="tl-date">2023.09.02</div><div class="tl-label">조직검사 시행<br>(서울행복외과)</div>
+                  </div>
+                  <div class="tl-point" style="left:40%;" data-evidence="contract">
+                    <div class="tl-dot"></div><div class="tl-date">2023.11.14</div><div class="tl-label">계약 체결일</div>
+                  </div>
+                  <div class="tl-point" style="left:96%;" data-evidence="claim">
+                    <div class="tl-dot"></div><div class="tl-date">2026.06.28</div><div class="tl-label">보험금 청구일</div>
+                  </div>
+                </div>
+              </div>
+
+              <table class="ev-table">
+                <thead><tr><th>데이터 소스</th><th>진료일</th><th>상병코드 / 내용</th><th>고지대상 해당</th><th>청약서 고지 상태</th></tr></thead>
+                <tbody>
+                  <tr class="flagged" data-evidence="code">
+                    <td>ICIS</td><td class="mono">2023.09.02</td><td>C50 · 유방 조직검사(Biopsy)</td>
+                    <td><span class="mini-tag red">해당</span></td><td><span class="mini-tag red">미고지</span></td>
+                  </tr>
+                  <tr data-evidence="missing">
+                    <td>스크래핑</td><td class="mono">2023.09.02</td><td>C50 관련 · 외래 진료기록 (상호 교차검증)</td>
+                    <td><span class="mini-tag red">해당</span></td><td><span class="mini-tag red">미고지</span></td>
+                  </tr>
+                  <tr>
+                    <td>ICIS</td><td class="mono">2021.03.11</td><td>J00 · 급성 비인두염(감기)</td>
+                    <td><span class="mini-tag gray">비해당</span></td><td><span class="mini-tag gray">-</span></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- ---- STEP 5 PANEL ---- -->
+          <div class="step-panel" id="panel-5">
+            <div class="locked-card" id="locked-5">
+              <div class="locked-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 018 0v3"/></svg></div>
+              <div class="locked-title">아직 진행할 수 없습니다</div>
+              <div class="locked-body">STEP 4에서 <b>현장심사(조사) 의뢰</b>가 확정되면 진행 현황이 이 화면에 표시됩니다.</div>
+            </div>
+            <div class="card card-pad" id="content-5" style="display:none;">
+              <div class="card-head">
+                <div><div class="card-eyebrow">STEP 5</div><div class="card-title">조사 진행관리</div></div>
+                <span class="badge amber" id="stage5-badge"><span class="badge-dot"></span>조사 진행중</span>
+              </div>
+
+              <div class="stage-tracker" id="stage-tracker">
+                <div class="stage-track-line"><div class="stage-track-fill" id="stage-track-fill"></div></div>
+                <div class="stage-pts" id="stage-pts">
+                  <div class="stage-pt done" data-stage="1"><div class="stage-dot">✓</div><div class="stage-label">조사 위임</div><div class="stage-date" id="stage-date-1">07.02</div></div>
+                  <div class="stage-pt active" data-stage="2"><div class="stage-dot">2</div><div class="stage-label">현장조사 진행</div><div class="stage-date" id="stage-date-2">진행중</div></div>
+                  <div class="stage-pt" data-stage="3"><div class="stage-dot">3</div><div class="stage-label">중간보고서 제출</div><div class="stage-date" id="stage-date-3">대기</div></div>
+                  <div class="stage-pt" data-stage="4"><div class="stage-dot">4</div><div class="stage-label">조사 완료</div><div class="stage-date" id="stage-date-4">대기</div></div>
+                </div>
+              </div>
+
+              <div class="side-list" style="margin-bottom:16px;">
+                <div class="side-row"><span class="side-label">조사 위임일</span><span class="side-value">2026.07.02</span></div>
+                <div class="side-row"><span class="side-label">경과일</span><span class="side-value">위임 후 0영업일 경과</span></div>
+                <div class="side-row"><span class="side-label">회사가 안날 기준(30일)</span><span class="side-value">D-30</span></div>
+                <div class="side-row"><span class="side-label">중간보고서</span><span class="side-value" id="midreport-status">제출 대기중</span></div>
+              </div>
+              <p style="font-size:12.5px; color:var(--slate); line-height:1.65; margin:0 0 14px;">중간보고서가 도착하면 AI가 조사결과를 자동 요약하고, 청약서 알릴의무사항과 자동 대조하여 고지의무 위반 해당 가능성을 근거와 함께 제시합니다.</p>
+              <div style="display:flex; gap:8px; flex-wrap:wrap;">
+                <button class="btn btn-solid-navy" id="btn-midreport">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M9 3h6l1 3H8l1-3z"/><rect x="5" y="6" width="14" height="15" rx="2"/><path d="M9 12h6M9 16h4"/></svg>
+                  중간보고서 검토 시작 (데모)
+                </button>
+                <button class="btn btn-line" id="btn-nudge">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+                  조사자에게 재촉 알림 발송
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- ---- STEP 6 PANEL (심사결과) ---- -->
+          <div class="step-panel" id="panel-6">
+            <div class="locked-card" id="locked-6">
+              <div class="locked-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 018 0v3"/></svg></div>
+              <div class="locked-title">아직 진행할 수 없습니다</div>
+              <div class="locked-body">STEP 4에서 조사 제외로 처리되거나 STEP 5 조사 진행관리에서 중간보고서 검토가 완료되면 심사결과 화면이 열립니다.</div>
+            </div>
+
+            <div class="card card-pad" id="content-6" style="display:none;">
+              <div class="card-head">
+                <div><div class="card-eyebrow">STEP 6</div><div class="card-title">심사결과</div></div>
+                <span class="badge green" id="result-badge"><span class="badge-dot"></span>고지의무 비해당 · 정상 지급</span>
+              </div>
+
+              <div class="result-visual" id="result-visual">
+                <div class="result-visual-icon" id="result-visual-icon">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6"><path d="M5 13l4 4L19 7"/></svg>
+                </div>
+                <div>
+                  <div class="result-visual-title" id="result-visual-title">고지의무 비해당 · 정상 지급 대상</div>
+                  <div class="result-visual-sub" id="result-visual-sub">고지의무 위반사항이 확인되지 않아 보험금 지급 절차를 진행할 수 있습니다.</div>
+                </div>
+              </div>
+
+              <div class="violation-toggle" id="violation-toggle">
+                <div class="cb" id="violation-cb"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg></div>
+                <div>
+                  <div>고지위반 해당 (해지 절차 진행)</div>
+                  <div class="violation-toggle-sub">체크하면 아래 고지위반 해지 체크리스트가 표시됩니다.</div>
+                </div>
+              </div>
+
+              <div id="terminate-block" style="display:none;">
+                <p style="font-size:12.5px; color:var(--slate); line-height:1.65; margin:0 0 4px;">고지의무 위반이 확인된 케이스입니다. 아래 5단계 체크리스트를 모두 완료해야 지급결재를 상신할 수 있습니다.</p>
+                <div class="progress-track"><div class="progress-fill" id="checklist-progress"></div></div>
+                <div class="checklist-mini" id="terminate-checklist">
+                  <div class="checklist-mini-row" data-idx="1"><div class="cb"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg></div><div class="checklist-mini-text">고지위반 사항·인과관계 입증자료 확보</div></div>
+                  <div class="checklist-mini-row" data-idx="2"><div class="cb"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg></div><div class="checklist-mini-text">계약해지 불가사유(5종) 해당 여부 확인</div></div>
+                  <div class="checklist-mini-row" data-idx="3"><div class="cb"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg></div><div class="checklist-mini-text">적부입력 면부책질의를 통한 해지 적정성 확인</div></div>
+                  <div class="checklist-mini-row" data-idx="4"><div class="cb"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg></div><div class="checklist-mini-text">면책해지공문 '내용증명' 발송 및 이미지 등재</div></div>
+                  <div class="checklist-mini-row" data-idx="5"><div class="cb"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg></div><div class="checklist-mini-text">보고서 제출 후 1개월 이내 등기 도달여부 확인</div></div>
+                </div>
+                <button class="btn btn-outline" style="background:var(--navy); color:#fff; margin-top:14px;" id="btn-send-notice">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+                  면책해지공문(내용증명) 발송 처리
+                </button>
+              </div>
+
+              <div class="approval-note" id="approval-note" style="display:none;"></div>
+              <button class="btn btn-primary btn-full" id="btn-submit-approval" style="margin-top:16px;">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+                지급결재 상신
+              </button>
+            </div>
+          </div>
+
+          <!-- ---- STEP 7 PANEL (지급결재) ---- -->
+          <div class="step-panel" id="panel-7">
+            <div class="locked-card" id="locked-7">
+              <div class="locked-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 018 0v3"/></svg></div>
+              <div class="locked-title">아직 진행할 수 없습니다</div>
+              <div class="locked-body">STEP 6 심사결과에서 <b>지급결재 상신</b>이 완료되면 결재자용 진행이력·결과 요약 대시보드가 열립니다.</div>
+            </div>
+
+            <div class="card card-pad" id="content-7" style="display:none;">
+              <div class="card-head">
+                <div><div class="card-eyebrow">STEP 7</div><div class="card-title">지급결재 · 결재자 대시보드</div></div>
+                <span class="badge amber" id="approval-badge"><span class="badge-dot"></span>결재 대기중</span>
+              </div>
+
+              <div class="stat-grid" id="stat-grid">
+                <div class="stat-tile"><div class="stat-tile-label">총 처리기간</div><div class="stat-tile-value" id="stat-days">13일</div><div class="stat-tile-sub">배당일 대비 경과</div></div>
+                <div class="stat-tile"><div class="stat-tile-label">심사결과</div><div class="stat-tile-value" id="stat-result">정상 지급</div><div class="stat-tile-sub" id="stat-result-sub">고지의무 위반사항 없음</div></div>
+                <div class="stat-tile"><div class="stat-tile-label">추정 지급액</div><div class="stat-tile-value" id="stat-amount">18,400,000원</div><div class="stat-tile-sub" id="stat-amount-sub">유방암(C50) 진단급</div></div>
+                <div class="stat-tile"><div class="stat-tile-label">체크리스트 이행률</div><div class="stat-tile-value" id="stat-checklist">해당없음</div><div class="stat-tile-sub" id="stat-checklist-sub">해지 절차 미해당</div></div>
+              </div>
+
+              <div class="card" style="box-shadow:none; border:1px solid var(--line); margin-top:18px;">
+                <div class="card-pad">
+                  <div class="card-head"><div class="card-title" style="font-size:15px;">단계별 처리 현황</div></div>
+                  <div id="hbar-chart">
+                    <div class="hbar-row"><div class="hbar-name">계약확인</div><div class="hbar-track"><div class="hbar-fill" style="width:14%; background:var(--green);"></div></div><div class="hbar-val">1일</div></div>
+                    <div class="hbar-row"><div class="hbar-name">서류확인</div><div class="hbar-track"><div class="hbar-fill" style="width:14%; background:var(--green);"></div></div><div class="hbar-val">1일</div></div>
+                    <div class="hbar-row"><div class="hbar-name">사고조사 판단</div><div class="hbar-track"><div class="hbar-fill" style="width:14%; background:var(--green);"></div></div><div class="hbar-val">1일</div></div>
+                    <div class="hbar-row" id="hbar-step5"><div class="hbar-name">조사 진행관리</div><div class="hbar-track"><div class="hbar-fill" id="hbar-step5-fill" style="width:0%; background:var(--amber);"></div></div><div class="hbar-val" id="hbar-step5-val">0일</div></div>
+                    <div class="hbar-row"><div class="hbar-name">심사결과</div><div class="hbar-track"><div class="hbar-fill" style="width:29%; background:var(--navy-mid);"></div></div><div class="hbar-val">2일</div></div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="card" style="box-shadow:none; border:1px solid var(--line); margin-top:14px;">
+                <div class="card-pad">
+                  <div class="card-head"><div class="card-title" style="font-size:15px;">전체 지급심사 진행이력</div></div>
+                  <div class="appr-timeline" id="approval-history"></div>
+                </div>
+              </div>
+
+              <div class="approval-final">
+                <div class="approval-final-text">
+                  <b id="approval-final-title">지급 승인이 필요합니다</b>
+                  <span id="approval-final-sub">결재자 확인 후 최종 지급/해지 절차가 종결됩니다.</span>
+                </div>
+                <button class="btn btn-primary" id="btn-approve-final">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M5 13l4 4L19 7"/></svg>
+                  지급 승인 확정
+                </button>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- ===== SIDE COLUMN ===== -->
+        <div class="col-side">
+
+          <!-- Action card (JS-controlled) -->
+          <div class="action-card" id="action-card"></div>
+
+          <div class="card card-pad">
+            <div class="card-head"><div class="card-title" style="font-size:15px;">최근 활동</div></div>
+            <div id="activity-log">
+              <div class="log-item">
+                <span class="log-dot red"></span>
+                <div><div class="log-body">AI · ICIS 대사 결과 고지의무 위반 의심 플래그 생성</div><div class="log-time">2026.07.02 · 14:22</div></div>
+              </div>
+              <div class="log-item">
+                <span class="log-dot"></span>
+                <div><div class="log-body">AI · 제출서류 3종 확인 완료</div><div class="log-time">2026.07.02 · 09:07</div></div>
+              </div>
+              <div class="log-item">
+                <span class="log-dot"></span>
+                <div><div class="log-body">이경 심사역 · 케이스 배정</div><div class="log-time">2026.07.02 · 09:00</div></div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- ============ VIEW: QUEUE ============ -->
+    <div class="view-panel" id="view-queue">
+      <div class="queue-wrap">
+        <div class="queue-head">
+          <div>
+            <div class="queue-title">배당 큐</div>
+            <div class="queue-sub">이경 심사역에게 배당된 케이스 5건</div>
+          </div>
+          <div class="queue-filters">
+            <button class="chip-filter active">전체</button>
+            <button class="chip-filter">조사필요</button>
+            <button class="chip-filter">심사중</button>
+            <button class="chip-filter">완료</button>
+          </div>
+        </div>
+        <table class="queue-table">
+          <thead><tr><th>청구건</th><th>청구상병</th><th>배당일</th><th>추정 지급액</th><th>상태</th><th>진행단계</th></tr></thead>
+          <tbody>
+            <tr class="queue-row current" data-open-case>
+              <td><div class="q-name">김도윤</div><div class="q-id">CL-2026-0417820</div></td>
+              <td>유방암(C50)</td><td class="mono">2026.07.02</td><td class="mono">18,400,000원</td>
+              <td><span class="badge red"><span class="badge-dot"></span>조사필요</span></td><td>STEP 4</td>
+            </tr>
+            <tr class="queue-row" data-open-case>
+              <td><div class="q-name">박서연</div><div class="q-id">CL-2026-0417512</div></td>
+              <td>뇌경색(I63)</td><td class="mono">2026.07.01</td><td class="mono">32,000,000원</td>
+              <td><span class="badge amber"><span class="badge-dot"></span>서류대기</span></td><td>STEP 3</td>
+            </tr>
+            <tr class="queue-row" data-open-case>
+              <td><div class="q-name">최민준</div><div class="q-id">CL-2026-0416980</div></td>
+              <td>척추질환(M48)</td><td class="mono">2026.06.29</td><td class="mono">2,100,000원</td>
+              <td><span class="badge green"><span class="badge-dot"></span>지급완료</span></td><td>STEP 7</td>
+            </tr>
+            <tr class="queue-row" data-open-case>
+              <td><div class="q-name">정하늘</div><div class="q-id">CL-2026-0416877</div></td>
+              <td>당뇨합병증(E11)</td><td class="mono">2026.06.28</td><td class="mono">4,500,000원</td>
+              <td><span class="badge navy"><span class="badge-dot"></span>조사제외</span></td><td>STEP 6</td>
+            </tr>
+            <tr class="queue-row" data-open-case>
+              <td><div class="q-name">한지우</div><div class="q-id">CL-2026-0416712</div></td>
+              <td>심근경색(I21)</td><td class="mono">2026.06.24</td><td class="mono">55,000,000원</td>
+              <td><span class="badge amber"><span class="badge-dot"></span>현장심사중</span></td><td>STEP 5</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ============ VIEW: PLACEHOLDER ============ -->
+    <div class="view-panel" id="view-placeholder">
+      <div class="placeholder-wrap">
+        <div class="placeholder-icon" id="ph-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/></svg>
+        </div>
+        <div class="placeholder-title" id="ph-title">준비 중인 화면입니다</div>
+        <div class="placeholder-body" id="ph-body">이 화면은 현재 목업 범위에 포함되어 있지 않습니다. 좌측 메뉴에서 심사 케이스 또는 배당 큐로 이동해 주세요.</div>
+        <button class="btn btn-solid-navy" data-view="case">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+          심사 케이스로 돌아가기
+        </button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ============ MODAL ============ -->
+<div class="modal-overlay" id="modal-overlay">
+  <div class="modal" id="modal-box"></div>
+</div>
+
+<!-- ============ TOASTS ============ -->
+<div class="toast-stack" id="toast-stack"></div>
+
+<script>
+(function(){
+
+  /* ---------------- State ---------------- */
+  var state = {
+    view: 'case',
+    step: 4,
+    caseStatus: 'review',   // review | recheck | investigate | midreport_done | excluded | submitted | paid
+    investigated: false,    // STEP 5 ever entered (조사 진행관리)
+    violation: false,       // STEP 6 판정: 고지위반 해당 여부
+    noticeSent: false,      // 면책해지공문 발송 여부
+    resultInited: false     // STEP 6 최초 진입 시 초기값 세팅 여부
+  };
+
+  var $ = function(sel, ctx){ return (ctx||document).querySelector(sel); };
+  var $all = function(sel, ctx){ return Array.prototype.slice.call((ctx||document).querySelectorAll(sel)); };
+
+  /* ---------------- Toasts ---------------- */
+  var toastIcons = {
+    success: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M5 13l4 4L19 7"/></svg>',
+    info: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="9"/><path d="M12 8h.01M11 12h1v5h1"/></svg>',
+    warn: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><path d="M12 9v4M12 17h.01"/></svg>'
+  };
+  function toast(msg, type){
+    type = type || 'info';
+    var stack = $('#toast-stack');
+    var el = document.createElement('div');
+    el.className = 'toast ' + type;
+    el.innerHTML = toastIcons[type] + '<span>' + msg + '</span>';
+    stack.appendChild(el);
+    requestAnimationFrame(function(){ el.classList.add('show'); });
+    setTimeout(function(){
+      el.classList.remove('show');
+      setTimeout(function(){ el.remove(); }, 220);
+    }, 3400);
+  }
+
+  /* ---------------- Modal ---------------- */
+  var overlay = $('#modal-overlay');
+  var modalBox = $('#modal-box');
+  function openModal(html){
+    modalBox.innerHTML = html;
+    overlay.classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeModal(){
+    overlay.classList.remove('open');
+    document.body.style.overflow = '';
+  }
+  overlay.addEventListener('click', function(e){ if(e.target === overlay) closeModal(); });
+  document.addEventListener('keydown', function(e){ if(e.key === 'Escape') closeModal(); });
+
+  function iconWarn(cls){ return '<div class="modal-icon '+cls+'"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><path d="M12 9v4M12 17h.01"/></svg></div>'; }
+  function iconCheck(cls){ return '<div class="modal-icon '+cls+'"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M5 13l4 4L19 7"/></svg></div>'; }
+  function iconClose(){ return '<button class="modal-close" data-close><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M18 6L6 18M6 6l12 12"/></svg></button>'; }
+
+  /* ---------------- Log & badge helpers ---------------- */
+  function addLog(text, dotClass){
+    var log = $('#activity-log');
+    var item = document.createElement('div');
+    item.className = 'log-item';
+    var now = new Date();
+    var hh = String(now.getHours()).padStart(2,'0'), mm = String(now.getMinutes()).padStart(2,'0');
+    item.innerHTML = '<span class="log-dot '+(dotClass||'')+'"></span><div><div class="log-body">'+text+'</div><div class="log-time">2026.07.02 · '+hh+':'+mm+'</div></div>';
+    log.insertBefore(item, log.firstChild);
+  }
+  function setTopBadge(cls, text){
+    var b = $('#top-badge');
+    b.className = 'badge ' + cls;
+    b.innerHTML = '<span class="badge-dot"></span>' + text;
+  }
+
+  /* ---------------- View switching ---------------- */
+  function switchView(view, opts){
+    opts = opts || {};
+    state.view = view;
+    $all('.view-panel').forEach(function(p){ p.classList.remove('active'); });
+    var map = { case:'#view-case', queue:'#view-queue' };
+    var target = map[view] || '#view-placeholder';
+    $(target).classList.add('active');
+
+    $all('.rail-item[data-view]').forEach(function(b){ b.classList.toggle('active', b.dataset.view === view); });
+
+    if(target === '#view-placeholder'){
+      var titles = { dashboard:['대시보드','전체 배당 현황과 심사 실적 요약이 표시될 예정입니다.'], field:['현장심사 관리','조사 위임 · 중간보고서 현황을 한눈에 관리하는 화면입니다.'], stats:['통계','심사 처리량, 평균 소요시간 등 통계 리포트가 제공될 예정입니다.'], settings:['설정','판정 룰 · 알림 · 연동 데이터 소스를 관리하는 화면입니다.'] };
+      var t = titles[view] || ['준비 중인 화면입니다','좌측 메뉴에서 심사 케이스 또는 배당 큐로 이동해 주세요.'];
+      $('#ph-title').textContent = t[0];
+      $('#ph-body').textContent = t[1];
+    }
+    if(!opts.silent) window.scrollTo({top:0, behavior:'instant'});
+  }
+
+  $all('[data-view]').forEach(function(el){
+    el.addEventListener('click', function(){ switchView(el.dataset.view); });
+  });
+
+  $all('[data-open-case]').forEach(function(row){
+    row.addEventListener('click', function(){
+      switchView('case');
+      toast('케이스를 불러왔습니다 · CL-2026-0417820', 'success');
+    });
+  });
+
+  /* ---------------- Step switching ---------------- */
+  function goToStep(n, force){
+    n = String(n);
+    if(!force){
+      if(n === '5' && !state.investigated){
+        toast('STEP 4 판정에서 현장심사(조사) 의뢰를 먼저 확정해 주세요.', 'warn');
+        return;
+      }
+      if(n === '6' && ['excluded','midreport_done','submitted','paid'].indexOf(state.caseStatus) === -1){
+        toast('STEP 4 또는 STEP 5 처리가 먼저 완료되어야 합니다.', 'warn');
+        return;
+      }
+      if(n === '7' && ['submitted','paid'].indexOf(state.caseStatus) === -1){
+        toast('STEP 6 심사결과에서 지급결재를 먼저 상신해 주세요.', 'warn');
+        return;
+      }
+    }
+    state.step = parseInt(n,10);
+    $all('.step-panel').forEach(function(p){ p.classList.remove('active'); });
+    $('#panel-'+n).classList.add('active');
+    $all('.stepper .step').forEach(function(b){ b.classList.toggle('active', b.dataset.step === n); });
+    if(n === '6') initResultPanel();
+    if(n === '7') renderApprovalDashboard();
+    renderActionCard();
+  }
+  $all('.stepper .step').forEach(function(b){
+    b.addEventListener('click', function(){ goToStep(b.dataset.step); });
+  });
+
+  function refreshStepperState(){
+    var s5 = $('.stepper .step[data-step="5"]');
+    var s6 = $('.stepper .step[data-step="6"]');
+    var s7 = $('.stepper .step[data-step="7"]');
+    var line45 = $('#line-45');
+    var line56 = $('#line-56');
+    var line67 = $('#line-67');
+    var unlocked5 = state.investigated;
+    var unlocked6 = ['excluded','midreport_done','submitted','paid'].indexOf(state.caseStatus) > -1;
+    var unlocked7 = ['submitted','paid'].indexOf(state.caseStatus) > -1;
+
+    s5.classList.toggle('locked', !unlocked5);
+    s6.classList.toggle('locked', !unlocked6);
+    s7.classList.toggle('locked', !unlocked7);
+    line45.classList.toggle('done', unlocked5 || state.caseStatus==='excluded');
+    line56.classList.toggle('done', unlocked6);
+    line67.classList.toggle('done', unlocked7);
+
+    $all('.stepper .step').forEach(function(b){ b.classList.remove('active','done'); });
+    var stepEls = { '2':$('.stepper .step[data-step="2"]'), '3':$('.stepper .step[data-step="3"]'), '4':$('.stepper .step[data-step="4"]'), '5':s5, '6':s6, '7':s7 };
+    stepEls['2'].classList.add('done'); stepEls['2'].querySelector('.step-num').textContent = '✓';
+    stepEls['3'].classList.add('done'); stepEls['3'].querySelector('.step-num').textContent = '✓';
+
+    if(state.caseStatus === 'review' || state.caseStatus === 'recheck'){
+      stepEls['4'].classList.add('active'); stepEls['4'].querySelector('.step-num').textContent = '4';
+    } else {
+      stepEls['4'].classList.add('done'); stepEls['4'].querySelector('.step-num').textContent = '✓';
+    }
+    if(unlocked5){
+      if(state.caseStatus === 'investigate'){ stepEls['5'].classList.add('active'); stepEls['5'].querySelector('.step-num').textContent='5'; }
+      else { stepEls['5'].classList.add('done'); stepEls['5'].querySelector('.step-num').textContent='✓'; }
+    } else { stepEls['5'].querySelector('.step-num').textContent = '5'; }
+
+    if(unlocked6){
+      if(unlocked7){ stepEls['6'].classList.add('done'); stepEls['6'].querySelector('.step-num').textContent='✓'; }
+      else { stepEls['6'].classList.add('active'); stepEls['6'].querySelector('.step-num').textContent='6'; }
+    } else { stepEls['6'].querySelector('.step-num').textContent = '6'; }
+
+    if(unlocked7){
+      if(state.caseStatus === 'paid'){ stepEls['7'].classList.add('done'); stepEls['7'].querySelector('.step-num').textContent='✓'; }
+      else { stepEls['7'].classList.add('active'); stepEls['7'].querySelector('.step-num').textContent='7'; }
+    } else { stepEls['7'].querySelector('.step-num').textContent = '7'; }
+  }
+
+  /* ---------------- Stage tracker (STEP 5) ---------------- */
+  function setStageTracker(stage){
+    // stage: 1=위임, 2=조사진행, 3=중간보고서 제출, 4=조사완료
+    var fillPct = {1:6, 2:38, 3:70, 4:100}[stage] || 6;
+    $('#stage-track-fill').style.width = fillPct + '%';
+    $all('.stage-pt').forEach(function(pt){
+      var idx = parseInt(pt.dataset.stage, 10);
+      pt.classList.remove('done','active');
+      if(idx < stage){ pt.classList.add('done'); pt.querySelector('.stage-dot').textContent = '✓'; }
+      else if(idx === stage){ pt.classList.add('active'); pt.querySelector('.stage-dot').textContent = idx; }
+      else { pt.querySelector('.stage-dot').textContent = idx; }
+    });
+    if($('#stage-date-2')) $('#stage-date-2').textContent = stage >= 2 ? (stage === 2 ? '진행중' : '완료') : '대기';
+    if($('#stage-date-3')) $('#stage-date-3').textContent = stage >= 3 ? '2026.07.09' : '대기';
+    if($('#stage-date-4')) $('#stage-date-4').textContent = stage >= 4 ? '2026.07.09' : '대기';
+  }
+
+  /* ---------------- Verdict card visuals ---------------- */
+  function paintVerdict(mode){
+    var card = $('#verdict-card');
+    card.classList.remove('is-green','is-amber');
+    var icon = $('#verdict-icon');
+    if(mode === 'green'){
+      card.classList.add('is-green');
+      $('#verdict-heading').textContent = 'AI 판정 · 조사 제외로 재처리됨';
+      $('#verdict-sub').textContent = '심사역 최종 판단 반영';
+      icon.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M5 13l4 4L19 7"/></svg>';
+    } else if(mode === 'amber'){
+      card.classList.add('is-amber');
+      $('#verdict-heading').textContent = 'AI 판정 · 재검토 대기';
+      $('#verdict-sub').textContent = '심사역이 재검토를 요청했습니다';
+      icon.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 013 3L7 19l-4 1 1-4z"/></svg>';
+    } else {
+      $('#verdict-heading').textContent = 'AI 판정 · 조사 필요';
+      $('#verdict-sub').textContent = '기준 ② ICIS · 스크래핑 알릴의무사항 대사 결과';
+      icon.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><path d="M12 9v4M12 17h.01"/></svg>';
+    }
+  }
+
+  /* ---------------- Action card render ---------------- */
+  function renderActionCard(){
+    var el = $('#action-card');
+    if(state.step !== 4){
+      var stepNames = {5:'조사 진행관리', 6:'심사결과', 7:'지급결재'};
+      el.innerHTML =
+        '<div class="card-eyebrow">심사자 최종 판단</div>' +
+        '<div class="card-title">STEP 4에서 처리됨</div>' +
+        '<p class="action-note">조사 필요 여부에 대한 최종 판단은 STEP 4 사고조사 판단 화면에서 이루어졌습니다. 현재 화면(' + (stepNames[state.step]||('STEP '+state.step)) + ')에서는 이후 진행 상황을 확인·처리할 수 있습니다.</p>' +
+        '<div class="action-btns"><button class="btn btn-outline" data-goto-step="4"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M9 3h6l1 3H8l1-3z"/><rect x="5" y="6" width="14" height="15" rx="2"/></svg>STEP 4로 이동</button></div>';
+      $('[data-goto-step]', el).addEventListener('click', function(){ goToStep(4); });
+      return;
+    }
+    if(state.caseStatus === 'review' || state.caseStatus === 'recheck'){
+      el.innerHTML =
+        '<div class="card-eyebrow">심사자 최종 판단</div>' +
+        '<div class="card-title">다음 조치를 선택하세요</div>' +
+        '<p class="action-note">AI는 판단 근거 제시자입니다. 조사 의뢰 여부에 대한 최종 결정은 심사역이 직접 수행합니다.</p>' +
+        (state.caseStatus === 'recheck' ? '<div class="status-note"><b>재검토 요청됨</b> · 배정 관리자 확인 대기 중입니다.</div>' : '') +
+        '<div class="action-btns">' +
+        '<button class="btn btn-primary" id="btn-investigate"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>현장심사(조사) 의뢰</button>' +
+        '<button class="btn btn-outline" id="btn-exclude"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M5 13l4 4L19 7"/></svg>조사 제외로 처리</button>' +
+        '<button class="btn btn-ghost" id="btn-recheck"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 013 3L7 19l-4 1 1-4z"/></svg>재검토 필요로 표시</button>' +
+        '</div>' +
+        '<textarea class="note-input" id="note-input" placeholder="판단 사유 메모 (선택)"></textarea>';
+      bindActionButtons();
+    } else if(state.caseStatus === 'investigate'){
+      el.innerHTML =
+        '<div class="card-eyebrow">심사자 최종 판단</div>' +
+        '<div class="card-title">조사 의뢰 확정됨</div>' +
+        '<div class="status-note"><b>현장심사(조사) 의뢰</b>가 확정되어 STEP 5로 이관되었습니다. 진행 현황은 STEP 5 화면에서 확인할 수 있습니다.</div>' +
+        '<div class="action-btns"><button class="btn btn-outline" id="goto5"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M5 12h14M13 6l6 6-6 6"/></svg>STEP 5로 이동</button></div>';
+      $('#goto5', el).addEventListener('click', function(){ goToStep(5, true); });
+    } else if(state.caseStatus === 'excluded' || state.caseStatus === 'midreport_done'){
+      var reachedBy = state.caseStatus === 'excluded' ? '조사 제외' : 'STEP 5 조사 완료';
+      el.innerHTML =
+        '<div class="card-eyebrow">심사자 최종 판단</div>' +
+        '<div class="card-title">STEP 6 심사결과 확인 필요</div>' +
+        '<div class="status-note"><b>' + reachedBy + '</b> 처리가 완료되어 STEP 6 심사결과로 이관되었습니다. 심사결과를 확정하고 지급결재를 상신해 주세요.</div>' +
+        '<div class="action-btns"><button class="btn btn-outline" id="goto6"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M5 12h14M13 6l6 6-6 6"/></svg>STEP 6로 이동</button></div>';
+      $('#goto6', el).addEventListener('click', function(){ goToStep(6, true); });
+    } else if(state.caseStatus === 'submitted'){
+      el.innerHTML =
+        '<div class="card-eyebrow">심사자 최종 판단</div>' +
+        '<div class="card-title">지급결재 상신됨</div>' +
+        '<div class="status-note">STEP 6 심사결과가 확정되어 <b>지급결재</b>가 상신되었습니다. 결재자의 최종 승인을 기다리는 중입니다.</div>' +
+        '<div class="action-btns"><button class="btn btn-outline" id="goto7"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M5 12h14M13 6l6 6-6 6"/></svg>STEP 7로 이동</button></div>';
+      $('#goto7', el).addEventListener('click', function(){ goToStep(7, true); });
+    } else {
+      el.innerHTML =
+        '<div class="card-eyebrow">심사자 최종 판단</div>' +
+        '<div class="card-title">처리 완료</div>' +
+        '<div class="status-note">이 케이스의 지급결재 승인까지 모두 완료되었습니다.</div>';
+    }
+  }
+
+  function bindActionButtons(){
+    var noteInput = $('#note-input');
+    $('#btn-investigate').addEventListener('click', function(){
+      openModal(
+        '<div class="modal-head">' + iconWarn('amber') + iconClose() + '</div>' +
+        '<div class="modal-title">현장심사(조사)를 의뢰할까요?</div>' +
+        '<div class="modal-body">해당 케이스가 STEP 5 현장심사 진행관리로 이관됩니다. 조사역에게 배정 알림이 발송됩니다.' +
+        '<div class="modal-summary">' +
+          '<div class="row"><span>청구건</span><span>CL-2026-0417820 · 김도윤</span></div>' +
+          '<div class="row"><span>판정 사유</span><span>고지의무 위반 의심 (기준②)</span></div>' +
+          '<div class="row"><span>추정 지급액</span><span>18,400,000원</span></div>' +
+        '</div></div>' +
+        '<div class="modal-foot"><button class="btn btn-line" data-close>취소</button><button class="btn btn-primary" id="confirm-investigate">조사 의뢰 확정</button></div>'
+      );
+      $('#confirm-investigate').addEventListener('click', function(){
+        state.caseStatus = 'investigate';
+        state.investigated = true;
+        setTopBadge('amber', '현장심사 진행중');
+        addLog('이경 심사역 · 현장심사(조사) 의뢰 확정' + (noteInput.value.trim() ? ' — "'+noteInput.value.trim()+'"' : ''), 'amber');
+        $('#locked-5').style.display = 'none';
+        $('#content-5').style.display = 'block';
+        setStageTracker(2);
+        refreshStepperState();
+        closeModal();
+        toast('현장심사가 의뢰되었습니다', 'success');
+        goToStep(5, true);
+      });
+    });
+
+    $('#btn-exclude').addEventListener('click', function(){
+      openModal(
+        '<div class="modal-head">' + iconWarn('red') + iconClose() + '</div>' +
+        '<div class="modal-title">조사 제외로 처리할까요?</div>' +
+        '<div class="modal-body">AI 판정(조사 필요)과 다른 처리입니다. 고지의무 위반 의심 근거가 있는 케이스이므로 <b>처리 사유를 반드시 입력</b>해 주세요.' +
+        '<div class="modal-field"><label>처리 사유 <span style="color:var(--red);">*</span></label><textarea id="exclude-reason" placeholder="예: 유선 확인 결과 해당 치료이력은 청구 상병과 무관한 것으로 확인됨"></textarea><div class="hint">입력한 사유는 감사로그에 기록되며 추후 룰 고도화에 활용됩니다.</div></div>' +
+        '</div>' +
+        '<div class="modal-foot"><button class="btn btn-line" data-close>취소</button><button class="btn btn-primary" id="confirm-exclude" disabled>조사 제외 확정</button></div>'
+      );
+      var reasonEl = $('#exclude-reason');
+      var confirmBtn = $('#confirm-exclude');
+      reasonEl.addEventListener('input', function(){ confirmBtn.disabled = reasonEl.value.trim().length < 4; });
+      confirmBtn.addEventListener('click', function(){
+        if(confirmBtn.disabled) return;
+        state.caseStatus = 'excluded';
+        setTopBadge('green', '조사제외 처리됨');
+        paintVerdict('green');
+        addLog('이경 심사역 · AI 판정과 다르게 조사 제외 처리 — "'+reasonEl.value.trim()+'"', 'green');
+        $('#locked-6').style.display = 'none';
+        $('#content-6').style.display = 'block';
+        refreshStepperState();
+        closeModal();
+        toast('조사 제외로 처리되었습니다', 'success');
+        goToStep(6, true);
+      });
+    });
+
+    $('#btn-recheck').addEventListener('click', function(){
+      openModal(
+        '<div class="modal-head">' + iconWarn('navy') + iconClose() + '</div>' +
+        '<div class="modal-title">재검토가 필요한가요?</div>' +
+        '<div class="modal-body">담당 관리자에게 재검토를 요청합니다.' +
+        '<div class="modal-field"><label>재검토 담당자</label><select id="recheck-assignee"><option>박지현 선임심사역</option><option>손유진 심사팀장</option><option>본인 재검토(추후 처리)</option></select></div>' +
+        '<div class="modal-field"><label>요청 사유</label><textarea id="recheck-reason" placeholder="예: ICIS 진료기록 상 병원명 확인이 추가로 필요함"></textarea></div>' +
+        '</div>' +
+        '<div class="modal-foot"><button class="btn btn-line" data-close>취소</button><button class="btn btn-primary" id="confirm-recheck">재검토 요청</button></div>'
+      );
+      $('#confirm-recheck').addEventListener('click', function(){
+        var assignee = $('#recheck-assignee').value;
+        state.caseStatus = 'recheck';
+        setTopBadge('amber', '재검토 대기 · ' + assignee.split(' ')[0]);
+        paintVerdict('amber');
+        addLog('이경 심사역 · ' + assignee + '에게 재검토 요청', 'amber');
+        closeModal();
+        toast('재검토가 요청되었습니다', 'success');
+        renderActionCard();
+      });
+    });
+  }
+
+  /* STEP 5: 중간보고서 검토 */
+  document.addEventListener('click', function(e){
+    if(e.target.closest && e.target.closest('#btn-midreport')){
+      openModal(
+        '<div class="modal-head">' + iconCheck('navy') + iconClose() + '</div>' +
+        '<div class="modal-title">중간보고서 자동 요약</div>' +
+        '<div class="modal-body">현장 조사역이 제출한 중간보고서를 AI가 요약했습니다.' +
+        '<div class="modal-summary">' +
+          '<div class="row"><span>조사결과</span><span>고지의무 위반 확인</span></div>' +
+          '<div class="row"><span>인과관계</span><span>청구 상병(C50)과 일치</span></div>' +
+          '<div class="row"><span>알릴의무 대사</span><span>미고지 · 위반 확정</span></div>' +
+        '</div></div>' +
+        '<div class="modal-foot"><button class="btn btn-line" data-close>닫기</button><button class="btn btn-primary" id="confirm-midreport">STEP 6로 이관</button></div>'
+      );
+      $('#confirm-midreport').addEventListener('click', function(){
+        state.caseStatus = 'midreport_done';
+        setTopBadge('red', '고지의무 위반 확정 · 심사결과 확인 필요');
+        addLog('AI · 중간보고서 대사 결과 고지의무 위반 최종 확인', 'red');
+        setStageTracker(4);
+        $('#stage5-badge').className = 'badge navy';
+        $('#stage5-badge').innerHTML = '<span class="badge-dot"></span>조사 완료';
+        $('#midreport-status').textContent = '검토 완료';
+        $('#locked-6').style.display = 'none';
+        $('#content-6').style.display = 'block';
+        refreshStepperState();
+        closeModal();
+        toast('STEP 6 심사결과 화면으로 이관되었습니다', 'success');
+        goToStep(6, true);
+        renderActionCard();
+      });
+    }
+  });
+
+  /* STEP 5: 조사자에게 재촉 알림 발송 */
+  document.addEventListener('click', function(e){
+    if(e.target.closest && e.target.closest('#btn-nudge')){
+      openModal(
+        '<div class="modal-head">' + iconWarn('navy') + iconClose() + '</div>' +
+        '<div class="modal-title">조사자에게 재촉 알림을 보낼까요?</div>' +
+        '<div class="modal-body">현장 조사역에게 중간보고서 제출을 독려하는 알림을 보냅니다.' +
+        '<div class="modal-field"><label>발송 채널</label><select id="nudge-channel"><option value="sms">문자(SMS)</option><option value="kakao">카카오톡 알림톡</option><option value="both">문자 + 카카오톡 모두</option></select></div>' +
+        '<div class="modal-field"><label>메시지 미리보기</label><textarea id="nudge-preview" readonly>[AI Co-pilot] CL-2026-0417820 김도윤 님 건 중간보고서 제출이 지연되고 있습니다. 빠른 제출 부탁드립니다.</textarea></div>' +
+        '</div>' +
+        '<div class="modal-foot"><button class="btn btn-line" data-close>취소</button><button class="btn btn-primary" id="confirm-nudge">발송</button></div>'
+      );
+      $('#confirm-nudge').addEventListener('click', function(){
+        var channelLabel = { sms:'문자(SMS)', kakao:'카카오톡 알림톡', both:'문자+카카오톡' }[$('#nudge-channel').value];
+        addLog('이경 심사역 · 조사자에게 중간보고서 재촉 알림 발송 (' + channelLabel + ')', 'amber');
+        closeModal();
+        toast(channelLabel + '로 재촉 알림을 발송했습니다', 'success');
+      });
+    }
+  });
+
+  /* ---------------- STEP 6: 심사결과 판정 ---------------- */
+  function initResultPanel(){
+    if(state.resultInited) return;
+    state.violation = (state.caseStatus === 'midreport_done');
+    state.resultInited = true;
+    renderResultPanel();
+  }
+  function renderResultPanel(){
+    var visual = $('#result-visual');
+    var icon = $('#result-visual-icon');
+    var title = $('#result-visual-title');
+    var sub = $('#result-visual-sub');
+    var toggle = $('#violation-toggle');
+    var cb = $('#violation-cb');
+    var badge = $('#result-badge');
+    var terminateBlock = $('#terminate-block');
+    var locked = ['submitted','paid'].indexOf(state.caseStatus) > -1;
+
+    toggle.classList.toggle('checked', state.violation);
+    cb.classList.toggle('checked', state.violation);
+    toggle.style.pointerEvents = locked ? 'none' : '';
+    toggle.style.opacity = locked ? '.6' : '1';
+
+    if(state.violation){
+      visual.classList.add('is-red');
+      icon.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><path d="M12 9v4M12 17h.01"/></svg>';
+      title.textContent = '고지위반 확인 · 면책·해지 대상';
+      sub.textContent = '고지의무 위반이 확인되어 해지 절차를 진행해야 합니다. 아래 체크리스트를 완료해 주세요.';
+      badge.className = 'badge red';
+      badge.innerHTML = '<span class="badge-dot"></span>고지위반 · 해지 절차 진행';
+      terminateBlock.style.display = 'block';
+    } else {
+      visual.classList.remove('is-red');
+      icon.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6"><path d="M5 13l4 4L19 7"/></svg>';
+      title.textContent = '고지의무 비해당 · 정상 지급 대상';
+      sub.textContent = '고지의무 위반사항이 확인되지 않아 보험금 지급 절차를 진행할 수 있습니다.';
+      badge.className = 'badge green';
+      badge.innerHTML = '<span class="badge-dot"></span>고지의무 비해당 · 정상 지급';
+      terminateBlock.style.display = 'none';
+    }
+    updateApprovalGate();
+  }
+  document.addEventListener('click', function(e){
+    if(e.target.closest && e.target.closest('#violation-toggle') && ['submitted','paid'].indexOf(state.caseStatus) === -1){
+      state.violation = !state.violation;
+      if(!state.violation){ state.noticeSent = false; }
+      renderResultPanel();
+    }
+  });
+
+  /* STEP 6: 해지 체크리스트 토글 */
+  document.addEventListener('click', function(e){
+    var row = e.target.closest && e.target.closest('.checklist-mini-row');
+    if(row && row.closest('#terminate-checklist')){
+      row.querySelector('.cb').classList.toggle('checked');
+      var total = $all('.checklist-mini-row', $('#terminate-checklist')).length;
+      var checked = $all('.checklist-mini-row .cb.checked', $('#terminate-checklist')).length;
+      $('#checklist-progress').style.width = Math.round(checked/total*100) + '%';
+      if(checked === total) toast('해지 절차 체크리스트를 모두 완료했습니다', 'success');
+      updateApprovalGate();
+    }
+  });
+
+  /* STEP 6: 내용증명 발송 */
+  document.addEventListener('click', function(e){
+    if(e.target.closest && e.target.closest('#btn-send-notice')){
+      openModal(
+        '<div class="modal-head">' + iconWarn('red') + iconClose() + '</div>' +
+        '<div class="modal-title">면책해지공문을 발송할까요?</div>' +
+        '<div class="modal-body">내용증명이 계약자(수신)·피보험자/수익자(참조) 앞으로 발송됩니다. 발송일 기준 1개월 법정기한이 자동으로 카운트됩니다.</div>' +
+        '<div class="modal-foot"><button class="btn btn-line" data-close>취소</button><button class="btn btn-primary" id="confirm-notice">발송 확정</button></div>'
+      );
+      $('#confirm-notice').addEventListener('click', function(){
+        state.noticeSent = true;
+        var row4 = $('.checklist-mini-row[data-idx="4"]', $('#terminate-checklist'));
+        if(row4 && !row4.querySelector('.cb').classList.contains('checked')){
+          row4.querySelector('.cb').classList.add('checked');
+          var total = $all('.checklist-mini-row', $('#terminate-checklist')).length;
+          var checked = $all('.checklist-mini-row .cb.checked', $('#terminate-checklist')).length;
+          $('#checklist-progress').style.width = Math.round(checked/total*100) + '%';
+        }
+        setTopBadge('navy', '해지공문 발송완료');
+        addLog('AI · 면책해지공문(내용증명) 발송 처리, 법정기한 자동 카운트 시작', 'navy');
+        closeModal();
+        toast('내용증명 발송이 처리되었습니다', 'success');
+        updateApprovalGate();
+      });
+    }
+  });
+
+  /* STEP 6: 지급결재 상신 가능 여부 제어 */
+  var submitApprovalDefaultHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M5 12h14M13 6l6 6-6 6"/></svg>지급결재 상신';
+  function updateApprovalGate(){
+    var btn = $('#btn-submit-approval');
+    var note = $('#approval-note');
+    if(!btn) return;
+    if(['submitted','paid'].indexOf(state.caseStatus) > -1){
+      btn.disabled = true;
+      btn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M5 13l4 4L19 7"/></svg>지급결재 상신 완료';
+      note.style.display = 'none';
+      return;
+    }
+    btn.innerHTML = submitApprovalDefaultHTML;
+    if(!state.violation){
+      btn.disabled = false;
+      note.style.display = 'none';
+    } else {
+      var total = $all('.checklist-mini-row', $('#terminate-checklist')).length;
+      var checked = $all('.checklist-mini-row .cb.checked', $('#terminate-checklist')).length;
+      var ready = (checked === total) && state.noticeSent;
+      btn.disabled = !ready;
+      if(!ready){
+        note.style.display = 'block';
+        note.innerHTML = '<b>지급결재 상신 불가</b> · 고지위반 해지 체크리스트('+checked+'/'+total+')와 면책해지공문 발송을 모두 완료해야 최종 지급결재를 상신할 수 있습니다.';
+      } else {
+        note.style.display = 'none';
+      }
+    }
+  }
+
+  /* STEP 6: 지급결재 상신 */
+  document.addEventListener('click', function(e){
+    if(e.target.closest && e.target.closest('#btn-submit-approval')){
+      var btn = $('#btn-submit-approval');
+      if(btn.disabled) return;
+      var summaryRow = state.violation
+        ? '<div class="row"><span>심사결과</span><span>고지위반 · 해지 절차</span></div>'
+        : '<div class="row"><span>심사결과</span><span>고지의무 비해당 · 정상 지급</span></div>';
+      openModal(
+        '<div class="modal-head">' + iconCheck('navy') + iconClose() + '</div>' +
+        '<div class="modal-title">지급결재를 상신할까요?</div>' +
+        '<div class="modal-body">결재자에게 진행이력·결과 요약이 포함된 지급결재 건이 상신됩니다.' +
+        '<div class="modal-summary">' +
+          '<div class="row"><span>청구건</span><span>CL-2026-0417820 · 김도윤</span></div>' +
+          summaryRow +
+        '</div></div>' +
+        '<div class="modal-foot"><button class="btn btn-line" data-close>취소</button><button class="btn btn-primary" id="confirm-submit-approval">상신 확정</button></div>'
+      );
+      $('#confirm-submit-approval').addEventListener('click', function(){
+        state.caseStatus = 'submitted';
+        setTopBadge('navy', '지급결재 상신됨 · 결재 대기');
+        addLog('이경 심사역 · 지급결재 상신 (' + (state.violation ? '고지위반 해지' : '정상 지급') + ')', 'navy');
+        $('#locked-7').style.display = 'none';
+        $('#content-7').style.display = 'block';
+        renderResultPanel();
+        refreshStepperState();
+        closeModal();
+        toast('지급결재가 상신되었습니다', 'success');
+        goToStep(7, true);
+      });
+    }
+  });
+
+  /* ---------------- STEP 7: 결재자 대시보드 ---------------- */
+  function renderApprovalDashboard(){
+    var elapsed = Math.max(1, Math.round((new Date('2026-07-15') - new Date('2026-07-02')) / 86400000));
+    $('#stat-days').textContent = elapsed + '일';
+    if(state.violation){
+      $('#stat-result').textContent = '고지위반 · 해지';
+      $('#stat-result').className = 'stat-tile-value red';
+      $('#stat-result-sub').textContent = '고지의무 위반 확정';
+      $('#stat-amount').textContent = '지급 면책';
+      $('#stat-amount-sub').textContent = '보험금 미지급 · 계약 해지';
+      var total = $all('.checklist-mini-row', $('#terminate-checklist')).length;
+      var checked = $all('.checklist-mini-row .cb.checked', $('#terminate-checklist')).length;
+      $('#stat-checklist').textContent = checked + '/' + total;
+      $('#stat-checklist').className = 'stat-tile-value ' + (checked===total ? 'green' : 'red');
+      $('#stat-checklist-sub').textContent = checked===total ? '해지 체크리스트 완료' : '체크리스트 진행중';
+      $('#hbar-step5').style.display = '';
+      $('#hbar-step5-fill').style.width = '43%';
+      $('#hbar-step5-val').textContent = '3일';
+    } else {
+      $('#stat-result').textContent = '정상 지급';
+      $('#stat-result').className = 'stat-tile-value green';
+      $('#stat-result-sub').textContent = '고지의무 위반사항 없음';
+      $('#stat-amount').textContent = '18,400,000원';
+      $('#stat-amount-sub').textContent = '유방암(C50) 진단급';
+      $('#stat-checklist').textContent = '해당없음';
+      $('#stat-checklist').className = 'stat-tile-value';
+      $('#stat-checklist-sub').textContent = '해지 절차 미해당';
+      $('#hbar-step5').style.display = state.investigated ? '' : 'none';
+    }
+
+    var hist = $('#approval-history');
+    hist.innerHTML = $('#activity-log').innerHTML;
+
+    var badge = $('#approval-badge');
+    var finalTitle = $('#approval-final-title');
+    var finalSub = $('#approval-final-sub');
+    var approveBtn = $('#btn-approve-final');
+    if(state.caseStatus === 'paid'){
+      badge.className = 'badge green';
+      badge.innerHTML = '<span class="badge-dot"></span>결재 완료';
+      finalTitle.textContent = state.violation ? '면책·해지 처리가 승인 완료되었습니다' : '보험금 지급이 승인 완료되었습니다';
+      finalSub.textContent = '결재일 2026.07.15 · 케이스가 종결되었습니다.';
+      approveBtn.disabled = true;
+      approveBtn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M5 13l4 4L19 7"/></svg>결재 완료';
+    } else {
+      badge.className = 'badge amber';
+      badge.innerHTML = '<span class="badge-dot"></span>결재 대기중';
+      finalTitle.textContent = state.violation ? '면책·해지 승인이 필요합니다' : '지급 승인이 필요합니다';
+      finalSub.textContent = '결재자 확인 후 최종 지급/해지 절차가 종결됩니다.';
+      approveBtn.disabled = false;
+      approveBtn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M5 13l4 4L19 7"/></svg>지급 승인 확정';
+    }
+  }
+
+  document.addEventListener('click', function(e){
+    if(e.target.closest && e.target.closest('#btn-approve-final')){
+      var btn = $('#btn-approve-final');
+      if(btn.disabled) return;
+      openModal(
+        '<div class="modal-head">' + iconCheck('green') + iconClose() + '</div>' +
+        '<div class="modal-title">' + (state.violation ? '면책·해지를 최종 승인할까요?' : '보험금 지급을 최종 승인할까요?') + '</div>' +
+        '<div class="modal-body">' + (state.violation
+          ? '김도윤 님 청구건을 고지의무 위반에 따른 <b>면책·해지</b>로 최종 승인합니다.'
+          : '김도윤 님 청구건의 보험금 <b>18,400,000원</b> 지급을 최종 승인합니다.') + ' 승인 후에는 취소할 수 없습니다.</div>' +
+        '<div class="modal-foot"><button class="btn btn-line" data-close>취소</button><button class="btn btn-primary" id="confirm-approve-final">최종 승인</button></div>'
+      );
+      $('#confirm-approve-final').addEventListener('click', function(){
+        state.caseStatus = 'paid';
+        setTopBadge(state.violation ? 'navy' : 'green', state.violation ? '면책·해지 승인완료' : '지급 완료');
+        addLog('결재자 · ' + (state.violation ? '면책·해지 최종 승인' : '보험금 18,400,000원 지급 최종 승인'), state.violation ? 'navy' : 'green');
+        refreshStepperState();
+        closeModal();
+        toast(state.violation ? '면책·해지가 최종 승인되었습니다' : '보험금 지급이 최종 승인되었습니다', 'success');
+        renderApprovalDashboard();
+      });
+    }
+  });
+
+  /* ---------------- Rule row accordion ---------------- */
+  $all('.rule-row').forEach(function(row){
+    row.addEventListener('click', function(){
+      var wasOpen = row.classList.contains('open');
+      $all('.rule-row.open').forEach(function(r){ r.classList.remove('open'); });
+      if(!wasOpen) row.classList.add('open');
+    });
+  });
+
+  /* ---------------- Evidence chip / timeline / table modal ---------------- */
+  var evidenceInfo = {
+    code: { t:'상병코드 대사 결과', b:'ICIS 조회 상병코드 C50(유방의 악성 신생물)과 청구 상병코드가 상호 일치함을 자동 확인했습니다. 진료일 2023.09.02, 진료기관 서울행복외과.' },
+    period: { t:'고지대상기간 산정', b:'상품 약관상 고지대상 기간은 가입 전 3개월(2023.06.02 ~ 2023.11.14)입니다. AI가 가입일 기준으로 자동 역산했습니다.' },
+    missing: { t:'청약서 알릴의무 대사 결과', b:'청약서 알릴의무사항 4번 항목(최근 3개월 내 검사·진단 이력)에 해당 치료이력이 기재되지 않은 것으로 확인되었습니다.' },
+    contract: { t:'계약 체결일', b:'2023.11.14 청약이 체결되었으며, 청약서상 알릴의무사항 작성 시점 기준 3개월 이내 치료이력 존재 여부가 핵심 대사 항목입니다.' },
+    claim: { t:'보험금 청구일', b:'2026.06.28 유방암(C50) 진단 확정에 따라 보험금이 청구되었습니다. 계약일로부터 2년 7개월 경과.' }
+  };
+  document.addEventListener('click', function(e){
+    var el = e.target.closest && e.target.closest('[data-evidence]');
+    if(el){
+      var key = el.dataset.evidence;
+      var info = evidenceInfo[key];
+      if(!info) return;
+      openModal(
+        '<div class="modal-head">' + iconWarn('red') + iconClose() + '</div>' +
+        '<div class="modal-title">' + info.t + '</div>' +
+        '<div class="modal-body">' + info.b + '</div>' +
+        '<div class="modal-foot"><button class="btn btn-primary" data-close style="flex:none; padding-left:26px; padding-right:26px;">확인</button></div>'
+      );
+    }
+  });
+
+  /* ---------------- Document preview modal ---------------- */
+  document.addEventListener('click', function(e){
+    var el = e.target.closest && e.target.closest('[data-doc]');
+    if(el){
+      var name = el.dataset.doc;
+      openModal(
+        '<div class="modal-head">' + iconCheck('green') + iconClose() + '</div>' +
+        '<div class="modal-title">' + name + '</div>' +
+        '<div class="modal-body">OCR·서류분류 모델 판독 결과, 제출 서류가 <b>' + name + '</b> 유형으로 정상 분류되었습니다.' +
+        '<div class="modal-doc-preview"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M9 3h6l1 3H8l1-3z"/><rect x="5" y="6" width="14" height="15" rx="2"/><path d="M9 12h6M9 16h4"/></svg><span style="font-size:11.5px;">문서 미리보기 (데모)</span></div>' +
+        '</div>' +
+        '<div class="modal-foot"><button class="btn btn-line" data-close>닫기</button><button class="btn btn-primary" data-close>원본 다운로드</button></div>'
+      );
+    }
+  });
+
+  /* ---------------- Close buttons (delegated) ---------------- */
+  document.addEventListener('click', function(e){
+    if(e.target.closest && e.target.closest('[data-close]')) closeModal();
+  });
+
+  /* ---------------- Print / Share ---------------- */
+  $('#print-btn').addEventListener('click', function(){
+    toast('인쇄 미리보기를 준비했습니다', 'info');
+    setTimeout(function(){ window.print(); }, 300);
+  });
+  $('#share-btn').addEventListener('click', function(){
+    openModal(
+      '<div class="modal-head">' + iconCheck('navy') + iconClose() + '</div>' +
+      '<div class="modal-title">케이스 링크 공유</div>' +
+      '<div class="modal-body">아래 링크를 공유하면 동일 권한을 가진 심사역이 이 케이스를 열람할 수 있습니다.' +
+      '<div class="modal-summary" style="font-family:var(--font-mono); word-break:break-all;">https://copilot.internal/claims/CL-2026-0417820</div></div>' +
+      '<div class="modal-foot"><button class="btn btn-line" data-close>닫기</button><button class="btn btn-primary" id="copy-link">링크 복사</button></div>'
+    );
+    $('#copy-link').addEventListener('click', function(){
+      var text = 'https://copilot.internal/claims/CL-2026-0417820';
+      var done = function(){ $('#copy-link').textContent = '복사됨 ✓'; toast('링크가 복사되었습니다', 'success'); };
+      if(navigator.clipboard && navigator.clipboard.writeText){ navigator.clipboard.writeText(text).then(done).catch(done); } else { done(); }
+    });
+  });
+
+  /* ---------------- Search dropdown ---------------- */
+  var searchInput = $('#search-input');
+  var searchDD = $('#search-dropdown');
+  searchInput.addEventListener('focus', function(){ searchDD.classList.add('open'); });
+  document.addEventListener('click', function(e){
+    if(!e.target.closest('.search-wrap')) searchDD.classList.remove('open');
+  });
+  $all('[data-search-pick]').forEach(function(item){
+    item.addEventListener('click', function(){
+      searchDD.classList.remove('open');
+      searchInput.value = '';
+      switchView('case');
+      toast('CL-2026-0417820 케이스로 이동했습니다', 'info');
+    });
+  });
+
+  /* ---------------- Notification dropdown ---------------- */
+  var bellBtn = $('#bell-btn');
+  var bellDD = $('#bell-dropdown');
+  bellBtn.addEventListener('click', function(e){
+    e.stopPropagation();
+    bellDD.classList.toggle('open');
+    bellBtn.querySelector('.dot').style.display = 'none';
+  });
+  document.addEventListener('click', function(e){
+    if(!e.target.closest('#bell-btn') && !e.target.closest('#bell-dropdown')) bellDD.classList.remove('open');
+  });
+
+  /* ---------------- Breadcrumb ---------------- */
+  $('#crumbs button[data-view]') && $('#crumbs button[data-view]').addEventListener('click', function(){ switchView('queue'); });
+
+  /* ---------------- Reset demo ---------------- */
+  $('#reset-demo').addEventListener('click', function(){
+    state.caseStatus = 'review';
+    state.investigated = false;
+    state.violation = false;
+    state.noticeSent = false;
+    state.resultInited = false;
+    setTopBadge('red', '조사필요 · 고지의무 위반 의심');
+    paintVerdict('default');
+    $('#locked-5').style.display='flex'; $('#content-5').style.display='none';
+    $('#stage5-badge').className = 'badge amber'; $('#stage5-badge').innerHTML = '<span class="badge-dot"></span>조사 진행중';
+    $('#midreport-status').textContent = '제출 대기중';
+    setStageTracker(1);
+    $('#locked-6').style.display='flex'; $('#content-6').style.display='none';
+    $('#locked-7').style.display='flex'; $('#content-7').style.display='none';
+    $all('.checklist-mini-row .cb.checked', $('#terminate-checklist')).forEach(function(cb){ cb.classList.remove('checked'); });
+    $('#checklist-progress').style.width = '0%';
+    var log = $('#activity-log');
+    log.innerHTML =
+      '<div class="log-item"><span class="log-dot red"></span><div><div class="log-body">AI · ICIS 대사 결과 고지의무 위반 의심 플래그 생성</div><div class="log-time">2026.07.02 · 14:22</div></div></div>' +
+      '<div class="log-item"><span class="log-dot"></span><div><div class="log-body">AI · 제출서류 3종 확인 완료</div><div class="log-time">2026.07.02 · 09:07</div></div></div>' +
+      '<div class="log-item"><span class="log-dot"></span><div><div class="log-body">이경 심사역 · 케이스 배정</div><div class="log-time">2026.07.02 · 09:00</div></div></div>';
+    refreshStepperState();
+    goToStep(4, true);
+    toast('데모가 초기화되었습니다', 'info');
+  });
+
+  /* ---------------- Init ---------------- */
+  refreshStepperState();
+  renderActionCard();
+
+})();
+</script>
+
+</body>
+</html>

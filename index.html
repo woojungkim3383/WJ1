@@ -403,6 +403,45 @@
   .toast.info svg{ color:#8FB1F5; }
   .toast.warn svg{ color:var(--amber); }
 
+  /* ---- Overview views: 대시보드 / 현장심사 관리 / 통계 ---- */
+  .ov-wrap{ padding:26px 28px 48px; display:flex; flex-direction:column; gap:20px; }
+  .ov-head{ display:flex; align-items:flex-end; justify-content:space-between; flex-wrap:wrap; gap:14px; }
+  .ov-title{ font-family:var(--font-display); font-size:24px; font-weight:600; }
+  .ov-sub{ font-size:12.5px; color:var(--slate); margin-top:4px; }
+  .kpi-tile{ cursor:pointer; transition:box-shadow .12s ease, transform .1s ease; }
+  .kpi-tile:hover{ box-shadow:var(--shadow-md); transform:translateY(-1px); }
+
+  .stackbar-track{ display:flex; height:30px; border-radius:8px; overflow:hidden; background:var(--bg); }
+  .stackbar-seg{ display:flex; align-items:center; justify-content:center; color:#fff; font-size:11px; font-weight:700; cursor:pointer; transition:filter .12s ease; position:relative; }
+  .stackbar-seg:hover{ filter:brightness(1.08); }
+  .stackbar-seg + .stackbar-seg{ border-left:2px solid #fff; }
+  .stackbar-legend{ display:flex; gap:18px; margin-top:14px; flex-wrap:wrap; }
+
+  .colchart-bars{ display:flex; align-items:flex-end; gap:16px; height:150px; padding-top:24px; }
+  .colchart-col{ flex:1; display:flex; flex-direction:column; align-items:center; justify-content:flex-end; height:100%; cursor:pointer; position:relative; }
+  .colchart-bar{ width:100%; max-width:38px; background:var(--navy-mid); border-radius:5px 5px 0 0; transition:background .12s ease; position:relative; }
+  .colchart-col:hover .colchart-bar{ background:var(--navy); }
+  .colchart-col.current .colchart-bar{ background:var(--amber); }
+  .colchart-value{ position:absolute; top:-22px; left:50%; transform:translateX(-50%); font-family:var(--font-mono); font-size:11px; color:var(--text); font-weight:700; opacity:0; transition:opacity .12s ease; white-space:nowrap; background:var(--white); padding:1px 5px; border-radius:5px; box-shadow:var(--shadow-sm); }
+  .colchart-col:hover .colchart-value{ opacity:1; }
+  .colchart-label{ font-size:10.5px; color:var(--slate-soft); margin-top:9px; }
+
+  .mini-stage{ display:flex; gap:4px; align-items:center; }
+  .mini-stage-dot{ width:8px; height:8px; border-radius:50%; background:var(--line); flex-shrink:0; }
+  .mini-stage-dot.done{ background:var(--green); }
+  .mini-stage-dot.active{ background:var(--amber); box-shadow:0 0 0 2px var(--amber-soft); }
+
+  .dday-tag{ font-family:var(--font-mono); font-size:11px; font-weight:700; padding:3px 8px; border-radius:6px; white-space:nowrap; }
+  .dday-tag.warn{ background:var(--red-soft); color:var(--red); }
+  .dday-tag.ok{ background:var(--green-soft); color:var(--green); }
+  .dday-tag.mid{ background:var(--amber-soft); color:var(--amber); }
+
+  .rank-row{ display:grid; grid-template-columns:20px 150px 1fr 60px; align-items:center; gap:10px; padding:8px 0; cursor:pointer; border-radius:8px; }
+  .rank-row:hover{ background:var(--bg); }
+  .rank-num{ font-family:var(--font-mono); font-size:11px; color:var(--slate-soft); font-weight:700; }
+  .rank-name{ font-size:12px; font-weight:600; color:var(--text); }
+  .rank-val{ font-family:var(--font-mono); font-size:11.5px; color:var(--slate); text-align:right; }
+
   @media (max-width: 1180px){ .content{ grid-template-columns: 1fr; } .col-side{ order:-1; } }
   @media (max-width: 720px){ .app{ grid-template-columns: 1fr; } .rail{ display:none; } .case-meta{ gap:18px; } .topbar-search{ display:none; } }
 </style>
@@ -1253,6 +1292,175 @@
       </div>
     </div>
 
+    <!-- ============ VIEW: DASHBOARD ============ -->
+    <div class="view-panel" id="view-dashboard">
+      <div class="ov-wrap">
+        <div class="ov-head">
+          <div>
+            <div class="ov-title">대시보드</div>
+            <div class="ov-sub">이경 심사역 배당 현황과 팀 전체 심사 실적 요약</div>
+          </div>
+          <button class="btn btn-line" id="dash-refresh">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 12a9 9 0 11-3-6.7M21 4v5h-5"/></svg>
+            새로고침
+          </button>
+        </div>
+
+        <div class="stat-grid">
+          <div class="stat-tile kpi-tile" data-kpi="total"><div class="stat-tile-label">전체 배당건수</div><div class="stat-tile-value">5건</div><div class="stat-tile-sub">이경 심사역 기준</div></div>
+          <div class="stat-tile kpi-tile" data-kpi="investigate"><div class="stat-tile-label">조사필요</div><div class="stat-tile-value red">1건</div><div class="stat-tile-sub">고지의무 위반 의심</div></div>
+          <div class="stat-tile kpi-tile" data-kpi="field"><div class="stat-tile-label">현장심사 진행중</div><div class="stat-tile-value amber">2건</div><div class="stat-tile-sub">조사자 배정 완료</div></div>
+          <div class="stat-tile kpi-tile" data-kpi="done"><div class="stat-tile-label">지급 · 제외 완료</div><div class="stat-tile-value green">2건</div><div class="stat-tile-sub">이번 주 종결</div></div>
+        </div>
+
+        <div class="card card-pad">
+          <div class="card-head"><div><div class="card-eyebrow">배당 현황</div><div class="card-title" style="font-size:16px;">상태별 케이스 분포</div></div></div>
+          <div class="stackbar-track">
+            <div class="stackbar-seg" data-seg="조사필요" style="width:20%; background:var(--red);">1건</div>
+            <div class="stackbar-seg" data-seg="서류대기 · 현장심사중" style="width:40%; background:var(--amber);">2건</div>
+            <div class="stackbar-seg" data-seg="조사제외" style="width:20%; background:var(--navy);">1건</div>
+            <div class="stackbar-seg" data-seg="지급완료" style="width:20%; background:var(--green);">1건</div>
+          </div>
+          <div class="stackbar-legend">
+            <span class="legend-item"><span class="legend-dot" style="background:var(--red);"></span>조사필요 (1건)</span>
+            <span class="legend-item"><span class="legend-dot" style="background:var(--amber);"></span>서류대기 · 현장심사중 (2건)</span>
+            <span class="legend-item"><span class="legend-dot" style="background:var(--navy);"></span>조사제외 (1건)</span>
+            <span class="legend-item"><span class="legend-dot" style="background:var(--green);"></span>지급완료 (1건)</span>
+          </div>
+        </div>
+
+        <div class="card card-pad">
+          <div class="card-head"><div><div class="card-eyebrow">최근 6개월</div><div class="card-title" style="font-size:16px;">월별 처리건수 추이</div></div></div>
+          <div class="colchart-bars">
+            <div class="colchart-col" data-month="2월" data-value="31"><div class="colchart-value">31건</div><div class="colchart-bar" style="height:62%;"></div><div class="colchart-label">2월</div></div>
+            <div class="colchart-col" data-month="3월" data-value="28"><div class="colchart-value">28건</div><div class="colchart-bar" style="height:56%;"></div><div class="colchart-label">3월</div></div>
+            <div class="colchart-col" data-month="4월" data-value="35"><div class="colchart-value">35건</div><div class="colchart-bar" style="height:70%;"></div><div class="colchart-label">4월</div></div>
+            <div class="colchart-col" data-month="5월" data-value="30"><div class="colchart-value">30건</div><div class="colchart-bar" style="height:60%;"></div><div class="colchart-label">5월</div></div>
+            <div class="colchart-col" data-month="6월" data-value="38"><div class="colchart-value">38건</div><div class="colchart-bar" style="height:76%;"></div><div class="colchart-label">6월</div></div>
+            <div class="colchart-col current" data-month="7월(진행중)" data-value="5"><div class="colchart-value">5건</div><div class="colchart-bar" style="height:10%;"></div><div class="colchart-label">7월</div></div>
+          </div>
+        </div>
+
+        <div class="card card-pad">
+          <div class="card-head">
+            <div><div class="card-eyebrow">배당 큐</div><div class="card-title" style="font-size:16px;">담당 케이스 현황</div></div>
+            <button class="btn btn-line" data-view="queue" style="padding:8px 12px; font-size:11.5px;">전체 큐 보기</button>
+          </div>
+          <table class="queue-table" style="box-shadow:none; border-radius:10px;">
+            <thead><tr><th>청구건</th><th>청구상병</th><th>상태</th><th>진행단계</th></tr></thead>
+            <tbody>
+              <tr class="queue-row" data-open-case><td><div class="q-name">김도윤</div><div class="q-id">CL-2026-0417820</div></td><td>유방암(C50)</td><td><span class="badge red"><span class="badge-dot"></span>조사필요</span></td><td>STEP 4</td></tr>
+              <tr class="queue-row" data-open-case><td><div class="q-name">박서연</div><div class="q-id">CL-2026-0417512</div></td><td>뇌경색(I63)</td><td><span class="badge amber"><span class="badge-dot"></span>서류대기</span></td><td>STEP 3</td></tr>
+              <tr class="queue-row" data-open-case><td><div class="q-name">한지우</div><div class="q-id">CL-2026-0416712</div></td><td>심근경색(I21)</td><td><span class="badge amber"><span class="badge-dot"></span>현장심사중</span></td><td>STEP 5</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============ VIEW: FIELD MANAGEMENT ============ -->
+    <div class="view-panel" id="view-field">
+      <div class="ov-wrap">
+        <div class="ov-head">
+          <div>
+            <div class="ov-title">현장심사 관리</div>
+            <div class="ov-sub">조사 위임 · 중간보고서 현황을 한눈에 관리합니다</div>
+          </div>
+        </div>
+
+        <div class="stat-grid">
+          <div class="stat-tile"><div class="stat-tile-label">진행중인 현장심사</div><div class="stat-tile-value amber">2건</div><div class="stat-tile-sub">조사자 배정 완료</div></div>
+          <div class="stat-tile"><div class="stat-tile-label">마감임박(D-7 이내)</div><div class="stat-tile-value">0건</div><div class="stat-tile-sub">회사가 안날 기준 30일</div></div>
+          <div class="stat-tile"><div class="stat-tile-label">평균 진행일</div><div class="stat-tile-value">6.5일</div><div class="stat-tile-sub">위임일 대비 경과</div></div>
+          <div class="stat-tile"><div class="stat-tile-label">이번주 재촉 알림 발송</div><div class="stat-tile-value" id="field-kpi-nudge">0건</div><div class="stat-tile-sub">문자 · 카카오톡</div></div>
+        </div>
+
+        <div class="card card-pad">
+          <div class="card-head"><div><div class="card-eyebrow">현장심사 진행중 케이스</div><div class="card-title" style="font-size:16px;">조사 진행관리 현황</div></div></div>
+          <table class="queue-table" style="box-shadow:none; border-radius:10px;">
+            <thead><tr><th>청구건</th><th>조사역</th><th>위임일</th><th>진행단계</th><th>중간보고서</th><th>D-day</th><th></th></tr></thead>
+            <tbody>
+              <tr class="queue-row" data-field-case="current">
+                <td><div class="q-name">김도윤</div><div class="q-id">CL-2026-0417820</div></td>
+                <td>박준혁 조사역</td>
+                <td class="mono">2026.07.02</td>
+                <td id="field-stage-current"><div class="mini-stage"><span class="mini-stage-dot"></span><span class="mini-stage-dot"></span><span class="mini-stage-dot"></span><span class="mini-stage-dot"></span></div></td>
+                <td id="field-report-current">조사 의뢰 전</td>
+                <td><span class="dday-tag ok" id="field-dday-current">-</span></td>
+                <td><button class="btn btn-line" data-nudge-row="current" style="padding:7px 10px; font-size:11.5px;">재촉</button></td>
+              </tr>
+              <tr class="queue-row" data-field-case="hanjiwoo">
+                <td><div class="q-name">한지우</div><div class="q-id">CL-2026-0416712</div></td>
+                <td>이서준 조사역</td>
+                <td class="mono">2026.06.24</td>
+                <td><div class="mini-stage"><span class="mini-stage-dot done"></span><span class="mini-stage-dot done"></span><span class="mini-stage-dot active"></span><span class="mini-stage-dot"></span></div></td>
+                <td>제출완료 · 검토중</td>
+                <td><span class="dday-tag mid">D-9</span></td>
+                <td><button class="btn btn-line" data-nudge-row="hanjiwoo" style="padding:7px 10px; font-size:11.5px;">재촉</button></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============ VIEW: STATS ============ -->
+    <div class="view-panel" id="view-stats">
+      <div class="ov-wrap">
+        <div class="ov-head">
+          <div>
+            <div class="ov-title">통계</div>
+            <div class="ov-sub">심사 처리량 · 평균 소요시간 · 판정 정확도 리포트</div>
+          </div>
+        </div>
+
+        <div class="stat-grid">
+          <div class="stat-tile"><div class="stat-tile-label">이번달 처리건수</div><div class="stat-tile-value">38건</div><div class="stat-tile-sub">전월 대비 +8%</div></div>
+          <div class="stat-tile"><div class="stat-tile-label">평균 처리기간</div><div class="stat-tile-value">9.4일</div><div class="stat-tile-sub">배당일 ~ 지급/해지</div></div>
+          <div class="stat-tile"><div class="stat-tile-label">지급률</div><div class="stat-tile-value green">78%</div><div class="stat-tile-sub">전체 청구건 대비</div></div>
+          <div class="stat-tile"><div class="stat-tile-label">고지위반 적발률</div><div class="stat-tile-value red">12%</div><div class="stat-tile-sub">기준② 자동대사 기여</div></div>
+        </div>
+
+        <div class="card card-pad">
+          <div class="card-head"><div><div class="card-eyebrow">최근 6개월</div><div class="card-title" style="font-size:16px;">월별 처리건수 추이</div></div></div>
+          <div class="colchart-bars">
+            <div class="colchart-col" data-month="2월" data-value="31"><div class="colchart-value">31건</div><div class="colchart-bar" style="height:62%;"></div><div class="colchart-label">2월</div></div>
+            <div class="colchart-col" data-month="3월" data-value="28"><div class="colchart-value">28건</div><div class="colchart-bar" style="height:56%;"></div><div class="colchart-label">3월</div></div>
+            <div class="colchart-col" data-month="4월" data-value="35"><div class="colchart-value">35건</div><div class="colchart-bar" style="height:70%;"></div><div class="colchart-label">4월</div></div>
+            <div class="colchart-col" data-month="5월" data-value="30"><div class="colchart-value">30건</div><div class="colchart-bar" style="height:60%;"></div><div class="colchart-label">5월</div></div>
+            <div class="colchart-col" data-month="6월" data-value="38"><div class="colchart-value">38건</div><div class="colchart-bar" style="height:76%;"></div><div class="colchart-label">6월</div></div>
+            <div class="colchart-col current" data-month="7월(진행중)" data-value="5"><div class="colchart-value">5건</div><div class="colchart-bar" style="height:10%;"></div><div class="colchart-label">7월</div></div>
+          </div>
+        </div>
+
+        <div class="card card-pad">
+          <div class="card-head"><div><div class="card-eyebrow">처리결과 분포</div><div class="card-title" style="font-size:16px;">최근 3개월 심사결과 비율</div></div></div>
+          <div class="stackbar-track">
+            <div class="stackbar-seg" data-seg="지급완료 · 정상" style="width:66%; background:var(--green);">66%</div>
+            <div class="stackbar-seg" data-seg="고지위반 해지" style="width:12%; background:var(--red);">12%</div>
+            <div class="stackbar-seg" data-seg="조사제외" style="width:15%; background:var(--navy);">15%</div>
+            <div class="stackbar-seg" data-seg="진행중" style="width:7%; background:var(--amber);">7%</div>
+          </div>
+          <div class="stackbar-legend">
+            <span class="legend-item"><span class="legend-dot" style="background:var(--green);"></span>지급완료 · 정상 (66%)</span>
+            <span class="legend-item"><span class="legend-dot" style="background:var(--red);"></span>고지위반 해지 (12%)</span>
+            <span class="legend-item"><span class="legend-dot" style="background:var(--navy);"></span>조사제외 (15%)</span>
+            <span class="legend-item"><span class="legend-dot" style="background:var(--amber);"></span>진행중 (7%)</span>
+          </div>
+        </div>
+
+        <div class="card card-pad">
+          <div class="card-head"><div><div class="card-eyebrow">이번달</div><div class="card-title" style="font-size:16px;">심사역별 처리건수</div></div></div>
+          <div>
+            <div class="rank-row" data-rank="이경 심사역" data-val="14건 · 지급률 82%"><span class="rank-num">1</span><span class="rank-name">이경 심사역</span><div class="hbar-track"><div class="hbar-fill" style="width:88%; background:var(--navy-mid);"></div></div><span class="rank-val">14건</span></div>
+            <div class="rank-row" data-rank="박지현 선임심사역" data-val="12건 · 지급률 75%"><span class="rank-num">2</span><span class="rank-name">박지현 선임심사역</span><div class="hbar-track"><div class="hbar-fill" style="width:75%; background:var(--navy-mid);"></div></div><span class="rank-val">12건</span></div>
+            <div class="rank-row" data-rank="손유진 심사팀장" data-val="8건 · 지급률 80%"><span class="rank-num">3</span><span class="rank-name">손유진 심사팀장</span><div class="hbar-track"><div class="hbar-fill" style="width:50%; background:var(--navy-mid);"></div></div><span class="rank-val">8건</span></div>
+            <div class="rank-row" data-rank="정하람 심사역" data-val="4건 · 지급률 70%"><span class="rank-num">4</span><span class="rank-name">정하람 심사역</span><div class="hbar-track"><div class="hbar-fill" style="width:25%; background:var(--navy-mid);"></div></div><span class="rank-val">4건</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- ============ VIEW: PLACEHOLDER ============ -->
     <div class="view-panel" id="view-placeholder">
       <div class="placeholder-wrap">
@@ -1356,18 +1564,19 @@
     opts = opts || {};
     state.view = view;
     $all('.view-panel').forEach(function(p){ p.classList.remove('active'); });
-    var map = { case:'#view-case', queue:'#view-queue' };
+    var map = { case:'#view-case', queue:'#view-queue', dashboard:'#view-dashboard', field:'#view-field', stats:'#view-stats' };
     var target = map[view] || '#view-placeholder';
     $(target).classList.add('active');
 
     $all('.rail-item[data-view]').forEach(function(b){ b.classList.toggle('active', b.dataset.view === view); });
 
     if(target === '#view-placeholder'){
-      var titles = { dashboard:['대시보드','전체 배당 현황과 심사 실적 요약이 표시될 예정입니다.'], field:['현장심사 관리','조사 위임 · 중간보고서 현황을 한눈에 관리하는 화면입니다.'], stats:['통계','심사 처리량, 평균 소요시간 등 통계 리포트가 제공될 예정입니다.'], settings:['설정','판정 룰 · 알림 · 연동 데이터 소스를 관리하는 화면입니다.'] };
+      var titles = { settings:['설정','판정 룰 · 알림 · 연동 데이터 소스를 관리하는 화면입니다.'] };
       var t = titles[view] || ['준비 중인 화면입니다','좌측 메뉴에서 심사 케이스 또는 배당 큐로 이동해 주세요.'];
       $('#ph-title').textContent = t[0];
       $('#ph-body').textContent = t[1];
     }
+    if(view === 'field') renderFieldCurrentRow();
     if(!opts.silent) window.scrollTo({top:0, behavior:'instant'});
   }
 
@@ -2043,6 +2252,165 @@
     refreshStepperState();
     goToStep(4, true);
     toast('데모가 초기화되었습니다', 'info');
+  });
+
+  /* ---------------- 대시보드 / 현장심사 관리 / 통계 ---------------- */
+
+  $('#dash-refresh') && $('#dash-refresh').addEventListener('click', function(){
+    toast('데이터가 최신 상태입니다', 'info');
+  });
+
+  var kpiInfo = {
+    total: { t:'전체 배당건수 · 5건', b:'이경 심사역에게 배당된 청구건 5건입니다. 상세 목록은 배당 큐에서 확인할 수 있습니다.' },
+    investigate: { t:'조사필요 · 1건', b:'김도윤 님(CL-2026-0417820, 유방암 C50) 건이 고지의무 위반 의심으로 조사필요 상태입니다.' },
+    field: { t:'현장심사 진행중 · 2건', b:'김도윤 님(CL-2026-0417820)과 한지우 님(CL-2026-0416712) 건이 현재 현장심사 진행관리 중입니다.' },
+    done: { t:'지급 · 제외 완료 · 2건', b:'최민준 님 건은 보험금 지급이 완료되었고, 정하늘 님 건은 조사 제외로 처리되어 종결되었습니다.' }
+  };
+  document.addEventListener('click', function(e){
+    var el = e.target.closest && e.target.closest('[data-kpi]');
+    if(el){
+      var info = kpiInfo[el.dataset.kpi];
+      if(!info) return;
+      openModal(
+        '<div class="modal-head">' + iconCheck('navy') + iconClose() + '</div>' +
+        '<div class="modal-title">' + info.t + '</div>' +
+        '<div class="modal-body">' + info.b + '</div>' +
+        '<div class="modal-foot"><button class="btn btn-line" data-close>닫기</button><button class="btn btn-primary" id="kpi-goto-queue">배당 큐 보기</button></div>'
+      );
+      $('#kpi-goto-queue').addEventListener('click', function(){ closeModal(); switchView('queue'); });
+    }
+  });
+
+  document.addEventListener('click', function(e){
+    var el = e.target.closest && e.target.closest('.stackbar-seg');
+    if(el){
+      openModal(
+        '<div class="modal-head">' + iconCheck('navy') + iconClose() + '</div>' +
+        '<div class="modal-title">' + el.dataset.seg + '</div>' +
+        '<div class="modal-body">해당 구간은 <b>' + el.textContent.trim() + '</b>에 해당합니다. 막대를 구성하는 각 구간은 케이스 상태를 실시간으로 반영합니다.</div>' +
+        '<div class="modal-foot"><button class="btn btn-primary" data-close style="flex:none; padding-left:26px; padding-right:26px;">확인</button></div>'
+      );
+    }
+  });
+
+  document.addEventListener('click', function(e){
+    var el = e.target.closest && e.target.closest('.colchart-col');
+    if(el){
+      var total = parseInt(el.dataset.value, 10) || 0;
+      var paid = Math.round(total * 0.66);
+      var excluded = Math.round(total * 0.15);
+      var terminated = Math.max(total - paid - excluded, 0);
+      openModal(
+        '<div class="modal-head">' + iconCheck('navy') + iconClose() + '</div>' +
+        '<div class="modal-title">' + el.dataset.month + ' 처리 현황</div>' +
+        '<div class="modal-body">총 <b>' + total + '건</b> 처리되었습니다.' +
+        '<div class="modal-summary">' +
+          '<div class="row"><span>지급완료 · 정상</span><span>' + paid + '건</span></div>' +
+          '<div class="row"><span>조사제외</span><span>' + excluded + '건</span></div>' +
+          '<div class="row"><span>고지위반 해지 · 진행중</span><span>' + terminated + '건</span></div>' +
+        '</div></div>' +
+        '<div class="modal-foot"><button class="btn btn-primary" data-close style="flex:none; padding-left:26px; padding-right:26px;">확인</button></div>'
+      );
+    }
+  });
+
+  document.addEventListener('click', function(e){
+    var el = e.target.closest && e.target.closest('.rank-row');
+    if(el){
+      openModal(
+        '<div class="modal-head">' + iconCheck('navy') + iconClose() + '</div>' +
+        '<div class="modal-title">' + el.dataset.rank + '</div>' +
+        '<div class="modal-body">이번달 처리 실적: <b>' + el.dataset.val + '</b></div>' +
+        '<div class="modal-foot"><button class="btn btn-primary" data-close style="flex:none; padding-left:26px; padding-right:26px;">확인</button></div>'
+      );
+    }
+  });
+
+  /* 현장심사 관리: 김도윤 건 행을 실제 케이스 상태와 연동하여 표시 */
+  function renderFieldCurrentRow(){
+    var stageCell = $('#field-stage-current');
+    if(!stageCell) return;
+    var dots = $all('.mini-stage-dot', stageCell);
+    var reportCell = $('#field-report-current');
+    var ddayTag = $('#field-dday-current');
+    var stageNum = 0;
+    if(state.investigated){
+      if(['midreport_done','submitted','paid'].indexOf(state.caseStatus) > -1) stageNum = 4;
+      else stageNum = 2;
+    }
+    dots.forEach(function(dot, i){
+      dot.classList.remove('done','active');
+      if(stageNum === 0) return;
+      if(i < stageNum - 1) dot.classList.add('done');
+      else if(i === stageNum - 1) dot.classList.add(stageNum === 4 ? 'done' : 'active');
+    });
+    if(!state.investigated){
+      reportCell.textContent = '조사 의뢰 전';
+      ddayTag.textContent = '-';
+      ddayTag.className = 'dday-tag ok';
+    } else if(stageNum === 4){
+      reportCell.textContent = '검토 완료';
+      ddayTag.textContent = 'D-30';
+      ddayTag.className = 'dday-tag ok';
+    } else {
+      reportCell.textContent = '제출 대기중';
+      ddayTag.textContent = 'D-30';
+      ddayTag.className = 'dday-tag ok';
+    }
+  }
+
+  document.addEventListener('click', function(e){
+    if(e.target.closest && e.target.closest('[data-nudge-row]')) return; // handled separately below
+    var row = e.target.closest && e.target.closest('[data-field-case]');
+    if(row){
+      if(row.dataset.fieldCase === 'current'){
+        if(!state.investigated){
+          toast('아직 현장심사가 의뢰되지 않았습니다. STEP 4에서 먼저 의뢰해 주세요.', 'warn');
+          return;
+        }
+        switchView('case');
+        goToStep(5, true);
+        toast('케이스를 불러왔습니다 · CL-2026-0417820', 'success');
+      } else {
+        openModal(
+          '<div class="modal-head">' + iconCheck('navy') + iconClose() + '</div>' +
+          '<div class="modal-title">한지우 님 청구건 · CL-2026-0416712</div>' +
+          '<div class="modal-body">심근경색(I21) · 추정 지급액 55,000,000원' +
+          '<div class="modal-summary">' +
+            '<div class="row"><span>조사역</span><span>이서준 조사역</span></div>' +
+            '<div class="row"><span>위임일</span><span>2026.06.24</span></div>' +
+            '<div class="row"><span>진행상황</span><span>중간보고서 제출완료 · 검토중</span></div>' +
+            '<div class="row"><span>회사가 안날 기준</span><span>D-9</span></div>' +
+          '</div></div>' +
+          '<div class="modal-foot"><button class="btn btn-line" data-close>닫기</button></div>'
+        );
+      }
+    }
+  });
+
+  document.addEventListener('click', function(e){
+    var btn = e.target.closest && e.target.closest('[data-nudge-row]');
+    if(btn){
+      e.stopPropagation();
+      var rowKey = btn.dataset.nudgeRow;
+      var caseLabel = rowKey === 'current' ? 'CL-2026-0417820 김도윤' : 'CL-2026-0416712 한지우';
+      openModal(
+        '<div class="modal-head">' + iconWarn('navy') + iconClose() + '</div>' +
+        '<div class="modal-title">조사자에게 재촉 알림을 보낼까요?</div>' +
+        '<div class="modal-body"><b>' + caseLabel + '</b> 건 현장 조사역에게 중간보고서 제출을 독려하는 알림을 보냅니다.' +
+        '<div class="modal-field"><label>발송 채널</label><select id="field-nudge-channel"><option value="sms">문자(SMS)</option><option value="kakao">카카오톡 알림톡</option><option value="both">문자 + 카카오톡 모두</option></select></div>' +
+        '</div>' +
+        '<div class="modal-foot"><button class="btn btn-line" data-close>취소</button><button class="btn btn-primary" id="confirm-field-nudge">발송</button></div>'
+      );
+      $('#confirm-field-nudge').addEventListener('click', function(){
+        var channelLabel = { sms:'문자(SMS)', kakao:'카카오톡 알림톡', both:'문자+카카오톡' }[$('#field-nudge-channel').value];
+        var counter = $('#field-kpi-nudge');
+        if(counter) counter.textContent = (parseInt(counter.textContent, 10) || 0) + 1 + '건';
+        if(rowKey === 'current') addLog('이경 심사역 · 조사자에게 중간보고서 재촉 알림 발송 (' + channelLabel + ')', 'amber');
+        closeModal();
+        toast(caseLabel + ' 건에 ' + channelLabel + ' 재촉 알림을 발송했습니다', 'success');
+      });
+    }
   });
 
   /* ---------------- Init ---------------- */

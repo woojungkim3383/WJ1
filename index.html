@@ -394,6 +394,33 @@
   .approval-final-text b{ display:block; font-family:var(--font-display); font-size:15px; margin-bottom:3px; color:#fff; font-weight:700; }
   .approval-final-text span{ font-size:11.5px; color:#B7BFE8; }
 
+  /* ---- Midreport detail / cross-contract reference ---- */
+  .modal.modal-wide{ width:640px; }
+  .mreport-section-title{ font-size:11px; font-weight:700; color:var(--slate-soft); text-transform:uppercase; letter-spacing:.05em; margin:18px 0 8px; }
+  .mreport-section-title:first-child{ margin-top:0; }
+  .mreport-visit{ border:1px solid var(--line); border-radius:9px; padding:10px 12px; margin-bottom:8px; }
+  .mreport-visit-top{ display:flex; justify-content:space-between; gap:10px; font-size:12px; font-weight:700; color:var(--text); }
+  .mreport-visit-date{ font-family:var(--font-mono); font-size:11px; color:var(--slate-soft); font-weight:500; white-space:nowrap; }
+  .mreport-visit-detail{ font-size:11.5px; color:var(--slate); margin-top:4px; line-height:1.5; }
+  .mreport-item{ display:flex; gap:9px; align-items:flex-start; padding:9px 0; border-bottom:1px dashed var(--line); }
+  .mreport-item:last-child{ border-bottom:none; }
+  .mreport-item-tag{ flex-shrink:0; font-size:10px; font-weight:700; padding:3px 8px; border-radius:6px; margin-top:1px; white-space:nowrap; }
+  .mreport-item-tag.hit{ background:var(--red-soft); color:var(--red); }
+  .mreport-item-tag.na{ background:var(--bg); color:var(--slate-soft); }
+  .mreport-item-body{ font-size:11.5px; color:var(--text); line-height:1.55; }
+  .mreport-item-body b{ color:var(--text); }
+  .mreport-item-sub{ font-size:11px; color:var(--slate-soft); margin-top:2px; line-height:1.5; }
+  .mreport-note{ background:var(--ice-soft); border:1px solid var(--ice); border-radius:9px; padding:11px 13px; margin-top:16px; font-size:11.5px; color:var(--navy); line-height:1.6; }
+  .mreport-note b{ color:var(--navy); }
+  .mreport-link{ background:none; border:none; padding:0; font:inherit; font-weight:700; color:var(--navy); text-decoration:underline; cursor:pointer; }
+
+  .policy-row{ border:1px solid var(--line); border-radius:10px; padding:12px 14px; margin-bottom:10px; }
+  .policy-row-top{ display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap; }
+  .policy-row-name{ font-size:12.5px; font-weight:700; color:var(--text); }
+  .policy-row-meta{ font-size:11px; color:var(--slate-soft); margin-top:2px; font-family:var(--font-mono); }
+  .policy-row-body{ font-size:11.5px; color:var(--slate); line-height:1.6; margin-top:8px; }
+  .policy-row-body b{ color:var(--text); }
+
   /* ---- Toasts ---- */
   .toast-stack{ position:fixed; bottom:22px; right:22px; display:flex; flex-direction:column; gap:10px; z-index:200; align-items:flex-end; }
   .toast{ background:var(--navy-dark); color:#fff; padding:13px 16px; border-radius:11px; font-size:12.5px; display:flex; align-items:center; gap:10px; box-shadow:var(--shadow-lg); max-width:320px; opacity:0; transform:translateX(14px); transition:opacity .18s ease, transform .18s ease; }
@@ -1059,6 +1086,36 @@
                 </tbody>
               </table>
             </div>
+
+            <!-- 타 계약 고지의무 참고사항 -->
+            <div class="card card-pad">
+              <div class="card-head">
+                <div><div class="card-eyebrow">참고사항 · 자동 교차검토</div><div class="card-title">피보험자 보유계약 고지의무 교차검토</div></div>
+                <span class="badge navy">1건 참고</span>
+              </div>
+              <p style="font-size:12.5px; color:var(--slate); line-height:1.65; margin:0 0 14px;">지급 검토 대상이 아닌 계약이라도, 고지의무위반 검토 제척기간(계약체결일로부터 3년) 이내인 계약은 제출된 피보험자 치료이력과 자동으로 교차 대조되어 참고사항으로 안내됩니다.</p>
+
+              <button class="rule-row">
+                <div class="rule-check fail"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6"><path d="M18 6L6 18M6 6l12 12"/></svg></div>
+                <div class="rule-text">무배당 든든한종신보험(1907) · 가입 2024.02.10 · 사망/상해 위주(유방암 진단 담보 없음)</div>
+                <span class="rule-tag fail">참고 · 위반 소지 확인</span>
+                <span class="rule-chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M6 9l6 6 6-6"/></svg></span>
+              </button>
+              <div class="rule-detail"><div class="rule-detail-inner">제척기간 이내(2027.02.10까지) 계약입니다. 청약서 알릴의무사항 중 '최근 5년 이내 조직검사 등 추가검사(재검사) 시행 이력' 문항에 2023.09.02 유방 조직검사가 해당되나 미고지 상태로 확인되어, 본 계약과 별개로 고지의무 위반 소지가 있습니다. 지급 담보가 없어 금번 심사에는 영향이 없으나 계약관리 부서 참고용으로 별도 검토가 필요합니다.</div></div>
+
+              <button class="rule-row">
+                <div class="rule-check na"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M6 12h12"/></svg></div>
+                <div class="rule-text">OO실손의료보험(1804) · 가입 2019.05.10</div>
+                <span class="rule-tag na">검토 제외 · 제척기간 경과</span>
+                <span class="rule-chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M6 9l6 6 6-6"/></svg></span>
+              </button>
+              <div class="rule-detail"><div class="rule-detail-inner">계약체결일로부터 3년(2022.05.10)이 경과하여 고지의무 위반에 따른 해지권이 소멸, 교차검토 대상에서 제외되었습니다.</div></div>
+
+              <button type="button" class="btn btn-line" data-open-policy-ref style="margin-top:6px; padding:9px 14px; font-size:11.5px;">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M9 3h6l1 3H8l1-3z"/><rect x="5" y="6" width="14" height="15" rx="2"/></svg>
+                타 계약 참고사항 상세보기
+              </button>
+            </div>
           </div>
 
           <!-- ---- STEP 5 PANEL ---- -->
@@ -1137,7 +1194,17 @@
               </div>
 
               <div id="terminate-block" style="display:none;">
-                <p style="font-size:12.5px; color:var(--slate); line-height:1.65; margin:0 0 4px;">고지의무 위반이 확인된 케이스입니다. 아래 5단계 체크리스트를 모두 완료해야 지급결재를 상신할 수 있습니다.</p>
+                <p style="font-size:12.5px; color:var(--slate); line-height:1.65; margin:0 0 10px;">고지의무 위반이 확인된 케이스입니다. 아래 5단계 체크리스트를 모두 완료해야 지급결재를 상신할 수 있습니다.</p>
+                <div style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:14px;">
+                  <button type="button" class="btn btn-line" id="btn-view-midreport-detail" style="padding:8px 12px; font-size:11.5px;">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M9 3h6l1 3H8l1-3z"/><rect x="5" y="6" width="14" height="15" rx="2"/><path d="M9 12h6M9 16h4"/></svg>
+                    중간보고서 상세 요약 보기
+                  </button>
+                  <button type="button" class="btn btn-line" data-open-policy-ref style="padding:8px 12px; font-size:11.5px;">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><path d="M12 9v4M12 17h.01"/></svg>
+                    타 계약 참고사항 보기
+                  </button>
+                </div>
                 <div class="progress-track"><div class="progress-fill" id="checklist-progress"></div></div>
                 <div class="checklist-mini" id="terminate-checklist">
                   <div class="checklist-mini-row" data-idx="1"><div class="cb"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg></div><div class="checklist-mini-text">고지위반 사항·인과관계 입증자료 확보</div></div>
@@ -1228,6 +1295,10 @@
               <div class="log-item">
                 <span class="log-dot red"></span>
                 <div><div class="log-body">AI · ICIS 대사 결과 고지의무 위반 의심 플래그 생성</div><div class="log-time">2026.07.02 · 14:22</div></div>
+              </div>
+              <div class="log-item">
+                <span class="log-dot amber"></span>
+                <div><div class="log-body">AI · 피보험자 보유계약 교차검토 결과 타 계약(1907) 고지의무 참고사항 확인</div><div class="log-time">2026.07.02 · 14:22</div></div>
               </div>
               <div class="log-item">
                 <span class="log-dot"></span>
@@ -1527,7 +1598,8 @@
   /* ---------------- Modal ---------------- */
   var overlay = $('#modal-overlay');
   var modalBox = $('#modal-box');
-  function openModal(html){
+  function openModal(html, extraClass){
+    modalBox.className = 'modal' + (extraClass ? ' ' + extraClass : '');
     modalBox.innerHTML = html;
     overlay.classList.add('open');
     document.body.style.overflow = 'hidden';
@@ -1542,6 +1614,95 @@
   function iconWarn(cls){ return '<div class="modal-icon '+cls+'"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><path d="M12 9v4M12 17h.01"/></svg></div>'; }
   function iconCheck(cls){ return '<div class="modal-icon '+cls+'"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M5 13l4 4L19 7"/></svg></div>'; }
   function iconClose(){ return '<button class="modal-close" data-close><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M18 6L6 18M6 6l12 12"/></svg></button>'; }
+
+  /* ---------------- 중간보고서 상세 요약 (병원 방문이력 + 알릴의무 대조) ---------------- */
+  function buildMidreportDetailHTML(){
+    return ''
+      + '<div class="mreport-section-title">피보험자 병원 방문이력 요약 (현장조사 + ICIS 통합)</div>'
+      + '<div class="mreport-visit">'
+        + '<div class="mreport-visit-top"><span>서울행복외과 · 외래</span><span class="mreport-visit-date">2023.09.02</span></div>'
+        + '<div class="mreport-visit-detail">유방 조직검사(Biopsy) 시행 · C50 의심소견으로 정밀검사 권유 기록 확인</div>'
+      + '</div>'
+      + '<div class="mreport-visit">'
+        + '<div class="mreport-visit-top"><span>서울행복외과 · 외래</span><span class="mreport-visit-date">2023.09.16</span></div>'
+        + '<div class="mreport-visit-detail">조직검사 결과 통보 · 악성 소견 관련 상급병원 전원 권고 기록 확인</div>'
+      + '</div>'
+      + '<div class="mreport-visit">'
+        + '<div class="mreport-visit-top"><span>강남연합의원 · 외래</span><span class="mreport-visit-date">2021.03.11</span></div>'
+        + '<div class="mreport-visit-detail">급성 비인두염(J00, 감기) · 고지대상기간(가입 전 3개월) 밖으로 대조 제외</div>'
+      + '</div>'
+      + '<div class="mreport-section-title">청약서 알릴의무사항 대조 결과</div>'
+      + '<div class="mreport-item">'
+        + '<span class="mreport-item-tag hit">의심</span>'
+        + '<div class="mreport-item-body"><b>문항 1</b> — 최근 3개월 이내 검사에서 이상소견 또는 재검사(정밀검사) 판정을 받은 사실이 있습니까?'
+          + '<div class="mreport-item-sub">2023.09.02 조직검사 및 이상소견 확인, 재검사 권고 기록 존재 · 청약서상 "아니오" 기재 → 미고지 의심</div>'
+        + '</div>'
+      + '</div>'
+      + '<div class="mreport-item">'
+        + '<span class="mreport-item-tag hit">의심</span>'
+        + '<div class="mreport-item-body"><b>문항 2</b> — 최근 3개월 이내 의사로부터 진찰 또는 검사를 통해 진단을 받은 사실이 있습니까?'
+          + '<div class="mreport-item-sub">동일 진료이력(2023.09.02 · 2023.09.16) 대조 결과 미고지 의심</div>'
+        + '</div>'
+      + '</div>'
+      + '<div class="mreport-item">'
+        + '<span class="mreport-item-tag na">해당없음</span>'
+        + '<div class="mreport-item-body"><b>문항 3</b> — 최근 5년 이내 질병으로 입원한 사실이 있습니까?'
+          + '<div class="mreport-item-sub">방문이력상 입원기록 없음(외래 진료만 확인)</div>'
+        + '</div>'
+      + '</div>'
+      + '<div class="mreport-item">'
+        + '<span class="mreport-item-tag na">해당없음</span>'
+        + '<div class="mreport-item-body"><b>문항 4</b> — 최근 5년 이내 계속하여 7일 이상 치료를 받은 사실이 있습니까?'
+          + '<div class="mreport-item-sub">단발성 검사·통보로 7일 이상 지속치료에 해당하지 않음</div>'
+        + '</div>'
+      + '</div>'
+      + '<div class="mreport-section-title">AI 종합의견</div>'
+      + '<p style="font-size:12px; color:var(--slate); line-height:1.65; margin:0;">문항 1·2에서 미고지 의심이 확인되며, 조직검사 상병(C50)이 금번 청구 상병과 일치해 인과관계가 인정됩니다. <b style="color:var(--red);">고지의무 위반으로 판단</b>됩니다.</p>'
+      + '<div class="mreport-note">'
+        + '<b>참고</b> · 피보험자가 보유한 타 계약(무배당 든든한종신보험 1907)도 고지의무위반 검토 제척기간 이내로 확인되어 동일 치료이력을 기준으로 교차검토가 함께 진행되었습니다. '
+        + '<button type="button" class="mreport-link" data-open-policy-ref>타 계약 참고사항 보기</button>'
+      + '</div>';
+  }
+
+  /* ---------------- 타 계약 고지의무 참고사항 (제척기간 이내 계약 교차검토) ---------------- */
+  function buildOtherPolicyDetailHTML(){
+    return ''
+      + '<p style="font-size:12px; color:var(--slate); line-height:1.6; margin:0 0 14px;">피보험자 명의의 전체 계약을 조회한 결과, 금번 청구와 무관한 계약이라도 고지의무위반 검토 제척기간(계약체결일로부터 3년) 이내인 계약은 제출된 치료이력과 자동으로 교차 대조됩니다.</p>'
+      + '<div class="policy-row">'
+        + '<div class="policy-row-top"><span class="policy-row-name">무배당 든든한종신보험(1907)</span><span class="badge red" style="font-size:10.5px; padding:3px 8px;">참고 · 위반 소지</span></div>'
+        + '<div class="policy-row-meta">가입일 2024.02.10 · 사망/상해 위주 담보(유방암 진단 담보 없음) · 제척기간 이내(2027.02.10까지)</div>'
+        + '<div class="policy-row-body">청약서 알릴의무사항 중 <b>"최근 5년 이내 조직검사 등 추가검사(재검사) 시행 이력"</b> 문항에 2023.09.02 유방 조직검사가 해당되나 미고지 상태로 확인되어, 본 계약과 별개로 고지의무 위반 소지가 있습니다. 지급 담보가 없어 금번 심사에는 영향이 없으나, 계약관리 부서 참고용으로 별도 검토가 필요합니다.</div>'
+      + '</div>'
+      + '<div class="policy-row">'
+        + '<div class="policy-row-top"><span class="policy-row-name">OO실손의료보험(1804)</span><span class="badge navy" style="font-size:10.5px; padding:3px 8px;">검토 제외</span></div>'
+        + '<div class="policy-row-meta">가입일 2019.05.10 · 제척기간 경과(2022.05.10 만료)</div>'
+        + '<div class="policy-row-body">계약체결일로부터 3년이 경과하여 고지의무 위반에 따른 해지권이 소멸, 교차검토 대상에서 제외되었습니다.</div>'
+      + '</div>';
+  }
+  document.addEventListener('click', function(e){
+    if(e.target.closest && e.target.closest('#btn-view-midreport-detail')){
+      openModal(
+        '<div class="modal-head">' + iconCheck('navy') + iconClose() + '</div>' +
+        '<div class="modal-title">중간보고서 자동 요약</div>' +
+        '<div class="modal-body">현장 조사역(박준혁 조사역)이 제출한 중간보고서를 AI가 자동 요약하고, 청약서 알릴의무사항과 대조했습니다.' +
+        buildMidreportDetailHTML() +
+        '</div>' +
+        '<div class="modal-foot"><button class="btn btn-primary" data-close style="flex:none; padding-left:26px; padding-right:26px;">확인</button></div>',
+        'modal-wide'
+      );
+    }
+  });
+  document.addEventListener('click', function(e){
+    if(e.target.closest && e.target.closest('[data-open-policy-ref]')){
+      openModal(
+        '<div class="modal-head">' + iconWarn('navy') + iconClose() + '</div>' +
+        '<div class="modal-title">타 계약 고지의무 참고사항</div>' +
+        '<div class="modal-body">' + buildOtherPolicyDetailHTML() + '</div>' +
+        '<div class="modal-foot"><button class="btn btn-primary" data-close style="flex:none; padding-left:26px; padding-right:26px;">확인</button></div>',
+        'modal-wide'
+      );
+    }
+  });
 
   /* ---------------- Log & badge helpers ---------------- */
   function addLog(text, dotClass){
@@ -1844,13 +2005,11 @@
       openModal(
         '<div class="modal-head">' + iconCheck('navy') + iconClose() + '</div>' +
         '<div class="modal-title">중간보고서 자동 요약</div>' +
-        '<div class="modal-body">현장 조사역이 제출한 중간보고서를 AI가 요약했습니다.' +
-        '<div class="modal-summary">' +
-          '<div class="row"><span>조사결과</span><span>고지의무 위반 확인</span></div>' +
-          '<div class="row"><span>인과관계</span><span>청구 상병(C50)과 일치</span></div>' +
-          '<div class="row"><span>알릴의무 대사</span><span>미고지 · 위반 확정</span></div>' +
-        '</div></div>' +
-        '<div class="modal-foot"><button class="btn btn-line" data-close>닫기</button><button class="btn btn-primary" id="confirm-midreport">STEP 6로 이관</button></div>'
+        '<div class="modal-body">현장 조사역(박준혁 조사역)이 제출한 중간보고서를 AI가 자동 요약하고, 청약서 알릴의무사항과 대조했습니다.' +
+        buildMidreportDetailHTML() +
+        '</div>' +
+        '<div class="modal-foot"><button class="btn btn-line" data-close>닫기</button><button class="btn btn-primary" id="confirm-midreport">STEP 6로 이관</button></div>',
+        'modal-wide'
       );
       $('#confirm-midreport').addEventListener('click', function(){
         state.caseStatus = 'midreport_done';
@@ -2247,6 +2406,7 @@
     var log = $('#activity-log');
     log.innerHTML =
       '<div class="log-item"><span class="log-dot red"></span><div><div class="log-body">AI · ICIS 대사 결과 고지의무 위반 의심 플래그 생성</div><div class="log-time">2026.07.02 · 14:22</div></div></div>' +
+      '<div class="log-item"><span class="log-dot amber"></span><div><div class="log-body">AI · 피보험자 보유계약 교차검토 결과 타 계약(1907) 고지의무 참고사항 확인</div><div class="log-time">2026.07.02 · 14:22</div></div></div>' +
       '<div class="log-item"><span class="log-dot"></span><div><div class="log-body">AI · 제출서류 3종 확인 완료</div><div class="log-time">2026.07.02 · 09:07</div></div></div>' +
       '<div class="log-item"><span class="log-dot"></span><div><div class="log-body">이경 심사역 · 케이스 배정</div><div class="log-time">2026.07.02 · 09:00</div></div></div>';
     refreshStepperState();
